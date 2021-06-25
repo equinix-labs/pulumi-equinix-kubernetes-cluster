@@ -1,0 +1,12 @@
+#cloud-config
+package_upgrade: true
+
+packages:
+  - lvm2
+
+write_files:
+  - owner: root/root
+    path: /etc/modules-load.d/ceph.conf
+    permissions: "0660"
+    content: |
+      rbd

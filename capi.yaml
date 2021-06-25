@@ -1,0 +1,271 @@
+## template: jinja
+#cloud-config
+
+write_files:
+  - path: /etc/kubernetes/pki/ca.crt
+    owner: root:root
+    permissions: "0640"
+    content: |
+      -----BEGIN CERTIFICATE-----
+      MIICyzCCAbOgAwIBAgIBADANBgkqhkiG9w0BAQsFADAVMRMwEQYDVQQDEwprdWJl
+      cm5ldGVzMB4XDTIxMDYyNTEyMDYyMFoXDTMxMDYyMzEyMTEyMFowFTETMBEGA1UE
+      AxMKa3ViZXJuZXRlczCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANAl
+      OctzNQa+8GXLSiGD6gB7QuAv9d94PdS7usPcEV4l6Hac5fd4MK4g2TphMdO5DNRR
+      Wc6XZ2I/XfcY8KU44653zXkNYOOCVFaF6j0ZqDlE83m1M6CV39/WbkCH0WoV5ENG
+      4pHo6lJ3/5nK4qqpU/oDlswTw8dPD4UmynMx+KFdQPlIQxVtJ/0zY0m5oGeyDxTy
+      qrDh2BbWt9Fp2HyMva5oacpRAg+JpAvM0LJMNYcciwvTd58/hOb/SAqLiZQU8/Bz
+      +xlO0tY77sYq2dHPYo1TJAHI7mZEtFb5NSlw/kKiwEThoO09gFK8ienu14Y6yDRd
+      8/3bd7PWc1QvBby8OjsCAwEAAaMmMCQwDgYDVR0PAQH/BAQDAgKkMBIGA1UdEwEB
+      /wQIMAYBAf8CAQAwDQYJKoZIhvcNAQELBQADggEBAMn0vCQRYEsPGz9P+Xduxiol
+      PP64kJIjoNJhjiTMA24QhT8VT9zn470MfICvSGzeWxv27fR3r1/HSJyc3ogg7K8G
+      kXMuQJ2ljH/nMVL9Q/5XVCnbgTbo473t9vXxs8FCYkJIF/kGikRYLUWEtigtaWEx
+      fFyMAPQJJG//AkGA43nwVz0PsYuWG3sPyHVrfaHg+bq3Eh41NHqp2FcdDfnHwVnf
+      tU7tz0hoPWHLbdspa4Z7fO9TfBEEnEKr/ahpXkySPt0YtlYouoqduL79CM2wVny7
+      Y+gDQq5UNEhFIzE3qmgW7xHhCrvLiZbrP6JmxCZwXu3/OK2iCDadAOaeFBpmzPE=
+      -----END CERTIFICATE-----
+
+  - path: /etc/kubernetes/pki/ca.key
+    owner: root:root
+    permissions: "0600"
+    content: |
+      -----BEGIN RSA PRIVATE KEY-----
+      MIIEpgIBAAKCAQEA0CU5y3M1Br7wZctKIYPqAHtC4C/133g91Lu6w9wRXiXodpzl
+      93gwriDZOmEx07kM1FFZzpdnYj9d9xjwpTjjrnfNeQ1g44JUVoXqPRmoOUTzebUz
+      oJXf39ZuQIfRahXkQ0bikejqUnf/mcriqqlT+gOWzBPDx08PhSbKczH4oV1A+UhD
+      FW0n/TNjSbmgZ7IPFPKqsOHYFta30WnYfIy9rmhpylECD4mkC8zQskw1hxyLC9N3
+      nz+E5v9ICouJlBTz8HP7GU7S1jvuxirZ0c9ijVMkAcjuZkS0Vvk1KXD+QqLAROGg
+      7T2AUryJ6e7XhjrINF3z/dt3s9ZzVC8FvLw6OwIDAQABAoIBAQCra90bV3h2Y85s
+      p24YCCIx31IGfLlMICUcDLgWEiojlajL9w/WLaA56Ee/Msjsi9yrB4yk/kBgw7tJ
+      g7q8+AtbZsNMTN5cwLtgvs1ZIMZQ1B6JP9iTCpvkJx+J+dFYQ0tItRpn/KDu5nEV
+      YegnkWjd4RLSY/y7Krund3kIQkF38m8OWrojIGT3KnV2zEtTnEpGKdNgE+xGpfYZ
+      0IIGxxenJuMikudBNkoV1ro6y+7rMD1w1VhuqAGfGjw9IlzH1yJzM1VTaEv9W5bi
+      hGZnG4zJTleqNfYYQseAf3xbJntayb+spdnoDumftPMOY04jkYi6+tidRc1Ql24g
+      2ZAKhcYBAoGBAOmeyhKTbjDo3I7pBAJjwwRoN/eH6eAmNY3GlUEBD1wAcAWFl4Q8
+      j/XrJiwvBCsuJnLbfa9uApIsEN6nnzBYgihWvgg4Oibck7lU6IsrT+aXhiJoXq7C
+      lNX6aQYYG02gXFU4Mv3LHhJ/zDBvKlFxoGAdsa9EYdz3RAEH8SSsN/6BAoGBAOQV
+      s31AKQaeo5Z01JuKOsT1qFZIV6I2OkGKUe6AVPMxxFJGpmp2aaDdjWGGTBU0JmKN
+      6UZKVgmWGP9m22qXWfGtBBBZTwhmQV6N8FCgNX5Yubds3F+xE7+SwwZoUVyoSLO9
+      P42P/H5Oy6T2k+8HrNsE43qrzbvBdC68okZ4UFK7AoGBAJ5AbA3NRLVo6A7+lTKx
+      NWeE2XSZ4rlt6JUTUgNonmjp+vgimJKBG9uv4HnJl39Qkcb4G9l8Ic22f+7ziQgM
+      zI5aw/t5axrsDD1c4PF083j2Z2xjWs/zCzMvn3j7V3NsD1/C4/e7YbGSVFTy2K22
+      1LaHJtfc8JXoAW7ZXGZFKuEBAoGBAMypqGiwhN+6xAHDDfAP5lJMOORLf88/p6Cd
+      9Iz1vMSImKhXWwbXAEtn4nBraKPyKqtuua7oDzIE7KNo8WRBMWVKIgZljSR1VRz6
+      cnR2fenExckQtuJq69SQZc2/F5r0KmCWZYuqcyAHpnZ9CBuJoJLbXR/7P93FZnJ1
+      s4tWdIT3AoGBAI7k+6owZ1Az191B/Z3slCEGuAdh1ufTyEP7nSJ+ihEQWRDqiXnB
+      WCMJeklvqj+rJQ3t1GKIVYZdnN5UDEDJwlluLpa47xHnrJdvrjclJo+S2V5OAwyL
+      NrPlV8QZ7Or4sy9gJpp6H9jxDqdwtvKbXcZMJVMDiKLNxciwmVo2Aexd
+      -----END RSA PRIVATE KEY-----
+
+  - path: /etc/kubernetes/pki/etcd/ca.crt
+    owner: root:root
+    permissions: "0640"
+    content: |
+      -----BEGIN CERTIFICATE-----
+      MIICyzCCAbOgAwIBAgIBADANBgkqhkiG9w0BAQsFADAVMRMwEQYDVQQDEwprdWJl
+      cm5ldGVzMB4XDTIxMDYyNTEyMDYyMVoXDTMxMDYyMzEyMTEyMVowFTETMBEGA1UE
+      AxMKa3ViZXJuZXRlczCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANhN
+      dVu0jKrj37ljz6PqZUPKJDoCuXNSxhkNd1vGSV2YP5OL1vGUrQcZ+t0j7jBFhU5d
+      OTx3EX3CEm8rFJ5NOUmHpyXT1oqokwYYNaA1358Tec9vqy5ylg9Jr/wE64cikUqT
+      oeZyAfsoHX4cciZzZyTR/EsI7v9cEa4H7MTuTrs9efNY3H4ppmlV98BIAsucQ0J1
+      J8cjrN/NLFSi+IFKxIOzecPNgHXGZxcXcp2KdRas1RbPscQ2AbTf2eLxuKjELm/O
+      RadwX5UPF4v6zYS4n3Ndf4Qnc2lxGc15RyqjZyPkXTEVIllZEHOIyHAYRH+8dBCh
+      qvcNbaNQBgJjHDUrQIkCAwEAAaMmMCQwDgYDVR0PAQH/BAQDAgKkMBIGA1UdEwEB
+      /wQIMAYBAf8CAQAwDQYJKoZIhvcNAQELBQADggEBANBi03OxWMsVDuldVKm78AFe
+      HQzcVvzRn6dX2QpeMZ7J/2t54CxLVecDqf9n3h5Bi15m5Xbd8VeTJEEojs8X6q+f
+      U8tX+gSeKwOMkrwyQJy1VjHL3vexNPxP1a5mGfdac03Ya1xQtTFeURrP2I/5BJ+E
+      fL1WZ6UUluGJHyiLwkxleD3GbYax3bOUmK4IrPtUNeXX86PnBnD+ioQ41ZNSiNZR
+      Oi74tcwQLK3edqdV/FcciU0ZAk0DFB9a1v9TtLKf7d8RvSdnbJn+gNWPSEkoA6dA
+      1S1TPfxMzYhSPUper1ygoTbuUeX0b82/sBKp5I3N2DMblHnXQOLiSu/Tcah3Ax4=
+      -----END CERTIFICATE-----
+
+  - path: /etc/kubernetes/pki/etcd/ca.key
+    owner: root:root
+    permissions: "0600"
+    content: |
+      -----BEGIN RSA PRIVATE KEY-----
+      MIIEpQIBAAKCAQEA2E11W7SMquPfuWPPo+plQ8okOgK5c1LGGQ13W8ZJXZg/k4vW
+      8ZStBxn63SPuMEWFTl05PHcRfcISbysUnk05SYenJdPWiqiTBhg1oDXfnxN5z2+r
+      LnKWD0mv/ATrhyKRSpOh5nIB+ygdfhxyJnNnJNH8Swju/1wRrgfsxO5Ouz1581jc
+      fimmaVX3wEgCy5xDQnUnxyOs380sVKL4gUrEg7N5w82AdcZnFxdynYp1FqzVFs+x
+      xDYBtN/Z4vG4qMQub85Fp3BflQ8Xi/rNhLifc11/hCdzaXEZzXlHKqNnI+RdMRUi
+      WVkQc4jIcBhEf7x0EKGq9w1to1AGAmMcNStAiQIDAQABAoIBAQC3RlqMS51tJwvn
+      38SOVQtctyie5rQQHTCxBZH+9zIu1dP4xuJna9x4SfEf81PdHurnDWJz80ek0Q4h
+      l9UulKxXu1NLYAVHE7MP1O+LQlqqRSxPMYVQI9M2PO+akOioZgfJsvHZevxmvQTQ
+      WHX4UowwzKQDSByJzo9EcH6UFoArcUo1xb98jEIrsqJvtDIoS0W/Uvjhnh3933K1
+      lOycVGJjMktOssoq4mVfTqZyKka1u1YpEMw31DvsUON79j0JXXK0tAD8MGvzaNti
+      tnddV4gg7speEVkuBzNV2loAwifVI3FRBmclzjwuw3H8kRC2dLrgei4hU5AM0Hs5
+      s1eO6zcBAoGBAN4nDK1tXKeDH3TFV9gvu0Jq1U1mSJzxnqlf9psrRJpLVET/aPaC
+      obrV7FVdk5gUFtaAMGo2pkCHlfrTKjI1/OxP3Xkflz6UBDlAU+9ZyyZY3/NFImva
+      G+Q8uKeJzUqO9Y4y0pcjbdhyqUCChCvbzqhxk8aOaCwUeibQ3t8tI7w5AoGBAPlC
+      O+BswWJUnyIS7SI0/i0KlzG8xuPgShPPan6Ko7B/G0Aopzc1djvji8VsXZwSaFrT
+      aCVQuWwI38QGIuSnRFb68hwSokumAd2f2gyOPBZX5JsPI+cBj4e7O0WYwjrms4eP
+      1JUYAIIjhkjoWuD2Jfo2/7yBftjxf7CodH5fv0bRAoGBAL1UbnuHzwV8vNxaK+m1
+      lFSglDWozI3lZqFXhebs00TkmmdLfftJjeib1RVT8SwVQvmAusJq3Pn2FB52xWmR
+      lYMY9dn60H2mzIq2hlJhJsAB0quT6igc9NRp4731tZ6rhB+ytMPWkBF+dzzhfx+Z
+      7+CjG5yHVcTrlsdqD+gIooIRAoGAcp/s3SXmQIvdqlO9zS9Fe/0UzoCbjguExVtr
+      A8pJwE6Tf4uyagch2iSoEB/nZHBqoOn7SL24p1/lV0XjIfdxy/YXBKXlEJjE3uA1
+      6/Q02amNrWjm/8KN+MM3XKgFGgUhpkOUZQPmp/IiPMDtmepYSJqmPE/ov2c/a0Ps
+      Xnk1gyECgYEA3HohqiVZl1f3Wtf/2bWk/5hiNH4YNqi61AEmDThqULTtV9YjFcsz
+      h4JhVcJASpsDTaNEnkHnaUsdx57vlvGPBMjRd4/N4znLzPkiYEK99N9OnxPd7w7S
+      8G4Qp1sPldzXISAjgPD4ECn51mcc4pd6/2wHHzw/47QxHJ7epZkz3uM=
+      -----END RSA PRIVATE KEY-----
+
+  - path: /etc/kubernetes/pki/front-proxy-ca.crt
+    owner: root:root
+    permissions: "0640"
+    content: |
+      -----BEGIN CERTIFICATE-----
+      MIICyzCCAbOgAwIBAgIBADANBgkqhkiG9w0BAQsFADAVMRMwEQYDVQQDEwprdWJl
+      cm5ldGVzMB4XDTIxMDYyNTEyMDYyMVoXDTMxMDYyMzEyMTEyMVowFTETMBEGA1UE
+      AxMKa3ViZXJuZXRlczCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAOsc
+      zf7SSQ5tYmzcrCY3zxY1PLWgD+3c3OO7quiSDhIgzjRz1cQcQxcbQp7wpiJ5FnxR
+      VflzxKQvDeI2V0STeez0uyIQe4RPdMLIbtjKfbyjwo4pGsQQhAEnx0/vva6ICZyq
+      plbOhh+WLglSacaSHwOm/u2WLsPupT0v/FYxHNppkK8tfflwF0fBH4t1po8BhAaV
+      MdMQPEr0JDYvCONEgCEPKMN8zcT5s8Y/fexdzmI3NG1P9tlXL5W5VWHfLsLTghTO
+      d2k02PFfzHU8tALlJ424G2/LojxqZHqalUMnqXOewGvtL0vlvKsgnYv3mtHZOlRQ
+      yzVD4g0Oc6MKwZfi5isCAwEAAaMmMCQwDgYDVR0PAQH/BAQDAgKkMBIGA1UdEwEB
+      /wQIMAYBAf8CAQAwDQYJKoZIhvcNAQELBQADggEBAClpKv5OblBYZlH0tEipq7ZJ
+      NWybyy0DCpuko2xfexOxK44jqqmtidV6r3ImSqf7lbXr5x+4v2ZG/hJIJZRq+FEJ
+      kcNbfm1l0bGoFwGnD8TG45lXJZ6wJpztcMvn1E3e+ak4TYWyzTe5P1nUrXi/c0Em
+      YMD1LD7iZ2kJbSKHcX+kBgUsQ4DFBBcjBDQ66d+xCBX7CGXRjMqHKmUC7N6+iO4S
+      hQUCmUC4ZIcMgDMUw5bJ7kIVgWJ+81nVNFmCtQaEbEnJzGbRPNFVlOgYjS2vJrDK
+      EI/kOP8h9KyPLE4TjiKm9geLXpgTBn4owiAv4QfUeKSnRuxVZkwMkTEkxgqHy8E=
+      -----END CERTIFICATE-----
+
+  - path: /etc/kubernetes/pki/front-proxy-ca.key
+    owner: root:root
+    permissions: "0600"
+    content: |
+      -----BEGIN RSA PRIVATE KEY-----
+      MIIEowIBAAKCAQEA6xzN/tJJDm1ibNysJjfPFjU8taAP7dzc47uq6JIOEiDONHPV
+      xBxDFxtCnvCmInkWfFFV+XPEpC8N4jZXRJN57PS7IhB7hE90wshu2Mp9vKPCjika
+      xBCEASfHT++9rogJnKqmVs6GH5YuCVJpxpIfA6b+7ZYuw+6lPS/8VjEc2mmQry19
+      +XAXR8Efi3WmjwGEBpUx0xA8SvQkNi8I40SAIQ8ow3zNxPmzxj997F3OYjc0bU/2
+      2VcvlblVYd8uwtOCFM53aTTY8V/MdTy0AuUnjbgbb8uiPGpkepqVQyepc57Aa+0v
+      S+W8qyCdi/ea0dk6VFDLNUPiDQ5zowrBl+LmKwIDAQABAoIBAQDGFvnUdfZJqo2f
+      7Pk6JhFbw7UHzfk9zrVpRqgD1XL3gR5bgTEdTzaTlEs4QMepCd6RFbJbP1fxgRew
+      fVpfk+XJaJT2aW64Fn3o0xjZnRn9Qvhb8HP1t3iQxKQgTHzDPSjkD7+gKddFa7IT
+      9pTaUijBWgU1xjBWso4UFIcFU9HcjjE1v4hrBZd0QewRLXYYrV7u0rlPAtK+oQKT
+      cOoXEhRJbHq5EHAu/l52l4LZ3+nXnnCQuk4L2AIiPE2IHLQ05MhEu7eGmzEfOhuq
+      s1q93//OCRE7lDBJhCK964pqtx0Mbau3wbsC92xm0pmxEe5Fm78AeJ8KWtxCUv7t
+      C7cUcDmRAoGBAP9DlCBprWGrIKXy0pKqN13tro1FaprVBe87y4soiq2WDHqnzjnQ
+      W6Ftt7Xp0Zq3CkfQGfpfuycgJub99n5Zv7eNxnyOtM7VxeXErm5jYmcF8NHoYn5p
+      eiND1eRBVBjlDUlNJOgIgHHInOLU+eaQHgjMUouKklzEUfijMjbElKEJAoGBAOvK
+      WfRlFXWu5+ZMIIrwKjMrrLsRdH8v+HdNXuO2j81q6P6dOQZMJbnv8idHTeyiV5Ti
+      2kcNmTR9FwilUOysodhdQjNlUMYuHNfkQleM6BtQDSGSGsYizPZe4m+igKo4f1r9
+      eAHiFVWALfvuDFzEplBIUOM18ZrPNHhdpfEPCH6TAoGAf0iMSSlIykXRjs4pD/cO
+      iqik/E6b3L7SKbuQQECj/fCvIk4geBWcSz9xdqUz3kjdOHfdLEqmANl4bIBAdDp+
+      baGlUqC6KdTQzESpkeO+wo5kydZtnokr3P/LXPjyXUOBv4ZXG9h5a8NT74uxXLWK
+      NGrl0izz1IwUL734oPSfBDkCgYBzgSSfvATPKWcgQZqPdSa2+mYbHWncBDvK9XPO
+      SNgY4I5Sa+JLW3H/q7ML2ropeT0+CgKzW835EG4AJjuGNOrzenu7gZ4X9u7aM07s
+      ZHIvLv+/ujqzZMjSx5hU513wBM0eXZw0D/Qzdh8QkoQrzYlLOqGlK/+2vloNvJJV
+      i++1UQKBgCg+ku5wA4W88Dp/N8jAQcaUnK8AeadMpNgg9kuA+9oxxeSZgeJs1CeY
+      z8dE8JKrvSSduBxsuKz313B8pSFPJDck1Ln6TO4Jl1O9Qgkq0JiHHpzcH2XB5Z5t
+      lNMkz+vWV+WjfbpRBuJVbYqANCrEiehlYzmDyEwdsSgzYm+x4SUs
+      -----END RSA PRIVATE KEY-----
+
+  - path: /etc/kubernetes/pki/sa.pub
+    owner: root:root
+    permissions: "0640"
+    content: |
+      -----BEGIN PUBLIC KEY-----
+      MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu8i7aVg9wnpqavx/8iNE
+      nlvBzRNx1UZOQUGnV9XRG1/0ObIbqrS4pdzaQRtRSjcZzeT2Oz6lM6yQpTlChUpM
+      0fH23AtD9yKCS3D9FzsLwvxU7cOlhzkc28bmCYKXk4w9Wt2Q7TmEPHskWWnCLiEA
+      ljrxOIll3o+TDG5oE5eo4KYN9tIYsvSg/qkpdyPekLSp81+dcT//tdB1ej+PEEnG
+      YNNO9oZ1U/TJ0uvnTIHZobY7Mrr7MFVmAoeFIIMgUepcqIX91GFpvU+g4eQhy1xi
+      u4OcTq3dux5gOWqSfup83q1VtxvLYgmh7klQTFDXpAlDhHClMBsKgGnuDuSJ5nk+
+      0QIDAQAB
+      -----END PUBLIC KEY-----
+
+  - path: /etc/kubernetes/pki/sa.key
+    owner: root:root
+    permissions: "0600"
+    content: |
+      -----BEGIN RSA PRIVATE KEY-----
+      MIIEogIBAAKCAQEAu8i7aVg9wnpqavx/8iNEnlvBzRNx1UZOQUGnV9XRG1/0ObIb
+      qrS4pdzaQRtRSjcZzeT2Oz6lM6yQpTlChUpM0fH23AtD9yKCS3D9FzsLwvxU7cOl
+      hzkc28bmCYKXk4w9Wt2Q7TmEPHskWWnCLiEAljrxOIll3o+TDG5oE5eo4KYN9tIY
+      svSg/qkpdyPekLSp81+dcT//tdB1ej+PEEnGYNNO9oZ1U/TJ0uvnTIHZobY7Mrr7
+      MFVmAoeFIIMgUepcqIX91GFpvU+g4eQhy1xiu4OcTq3dux5gOWqSfup83q1VtxvL
+      Ygmh7klQTFDXpAlDhHClMBsKgGnuDuSJ5nk+0QIDAQABAoIBADNE4c4oNmxzibx+
+      BdyxPlnSCX6ZMXoeQN1WNH8ptHa54u8hrqYTw1odi0U9VRtjIdtyCLwyJV6PXcqO
+      cJf9qi2j11dKiBrgRBye06rVBygMRo/H29iogjWK/2FXU1UIc/PsDFaIXo84u7rh
+      wg9gGU3q99MMyFBUeLxrJGU9AfGbS+yBzSeR7FZRPnN0QhYBoCQ7SRIzFLK81CBD
+      Vt0+UEd8lWxEAXgfdmyTX9vHnHPPJ0uw+MDrF+ypEDyVLhC8Ua0A3idNeQI7ZZKm
+      IKteyDJr+p/VZKaWbz9JpMb3ng6MY45KR1SYBEJcF0PxM5prYRm2+T/1i8H1F4Bs
+      9vAJ8TECgYEA+kcVUUSNXkYMu1ChvpJUPCYmJ5zSGU8ShAdt9EUfkQHOOaYNZL3+
+      yRb3ipjV3l2tnhn0T1KzbQ6AdgapjUeIDbxE62dZqpCiq+0KF/D30h6KVaTyLoDE
+      oC/A4Qz8ERxCygPS2CUzaw1UGIVZlQ5fr+POOj7sEJYpcbAM9u+OiYUCgYEAwBPd
+      FvXHE+eAgXveoMivhHO9nLlt5sai1TRjtWzn8awJsQXEvV9zg0JGKjWTOgLtSQeL
+      2QkOtcFom4DXjDtENtbQag40/wg3ArDW1+nhkt7tgB+q8CPqYnyJmdugt8Hdu2fG
+      B5zvCiJv78v+znjkB1uO0TnLuxH/6RksXjpVm90CgYBctvSItJKCOAUDZy1kAaU+
+      2wsLZabXRVmgm3f6I5k8CKUy6fbQOSonqGBvcYrY428rwIWm1QYvAk5IatNoyPT3
+      0aTeZ9zpuMbqVdeFYvkLV9D7RS2KWJ1+kfIr7Ll8RTHg0GXNOIrBv6BFrTCwbTC5
+      YfTF0wV0Z4xW11cWK0xsWQKBgGUp0RcnqYtlMXyBFhdOu4qiPuqNi0Gxus9aAW3r
+      hxn1B0GyDRXEcR1fyX6vqvQx2HHPRKuxpoq56/OC34PfLyVG7Iv/IZB07iw/oVgk
+      uYbWXPZPN4O1Ftx6RSrAzxwZQkRS+qzFzexjiNsecPykFU1+vnCZ5SCI8WT+uiyC
+      wtYNAoGADmugxULoenH+BPEK+zrSJms3RnAySLygWcvKrVu0rJCWczH0kUvrDfiK
+      IeUtznO/DdM7cudSx2qZ9FPrRTjy6vf/22lQvRWMRcxXJfjyUWT/cTSmLq/R0NBx
+      YdrI8Yrl2dU9pm6n2dIdLKlzFNgF2szBX4/Nkva9AZQmN3wUNyc=
+      -----END RSA PRIVATE KEY-----
+
+  - path: /tmp/kubeadm.yaml
+    owner: root:root
+    permissions: "0640"
+    content: |
+      ---
+      apiServer:
+        extraArgs:
+          cloud-provider: external
+      apiVersion: kubeadm.k8s.io/v1beta2
+      clusterName: kluster-029-displague
+      controlPlaneEndpoint: 145.40.93.70:6443
+      controllerManager:
+        extraArgs:
+          cloud-provider: external
+      dns: {}
+      etcd: {}
+      kind: ClusterConfiguration
+      kubernetesVersion: v1.21.2
+      networking:
+        podSubnet: 192.168.0.0/16
+        serviceSubnet: 172.26.0.0/16
+      scheduler: {}
+
+      ---
+      apiVersion: kubeadm.k8s.io/v1beta2
+      kind: InitConfiguration
+      localAPIEndpoint:
+        advertiseAddress: ""
+        bindPort: 0
+      nodeRegistration:
+        kubeletExtraArgs:
+          cloud-provider: external
+
+runcmd:
+  - "sed -ri '/\\sswap\\s/s/^#?/#/' /etc/fstab"
+  - "swapoff -a"
+  - "mount -a"
+  - "cat <<EOF > /etc/modules-load.d/containerd.conf\noverlay\nbr_netfilter\nEOF\n"
+  - "modprobe overlay"
+  - "modprobe br_netfilter"
+  - "cat <<EOF > /etc/sysctl.d/99-kubernetes-cri.conf\nnet.bridge.bridge-nf-call-iptables  = 1\nnet.ipv4.ip_forward                 = 1\nnet.bridge.bridge-nf-call-ip6tables = 1\nEOF\n"
+  - "sysctl --system"
+  - "apt-get -y update"
+  - "DEBIAN_FRONTEND=noninteractive apt-get install -y apt-transport-https curl"
+  - "curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -"
+  - 'echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list'
+  - "apt-get update -y"
+  - "TRIMMED_KUBERNETES_VERSION=$(echo v1.21.2 | sed 's/\\./\\./g' | sed 's/^v//')"
+  - "RESOLVED_KUBERNETES_VERSION=$(apt-cache policy kubelet | awk -v VERSION=${TRIMMED_KUBERNETES_VERSION} '$1~ VERSION { print $1 }' | head -n1)"
+  - "apt-get install -y ca-certificates socat jq lvm2 ebtables apt-transport-https cloud-utils prips containerd kubelet=${RESOLVED_KUBERNETES_VERSION} kubeadm=${RESOLVED_KUBERNETES_VERSION} kubectl=${RESOLVED_KUBERNETES_VERSION}"
+  - "systemctl daemon-reload"
+  - "systemctl enable containerd"
+  - "systemctl start containerd"
+  - "ping -c 3 -q 145.40.93.70 && echo OK || ip addr add 145.40.93.70 dev lo"
+  - "kubeadm init --config /tmp/kubeadm.yaml "
+  - "cat <<EOF >> /etc/network/interfaces\nauto lo:0\niface lo:0 inet static\n  address 145.40.93.70\n  netmask 255.255.255.255\nEOF\n"
+  - "systemctl restart networking"
+  - 'kubectl --kubeconfig /etc/kubernetes/admin.conf create secret generic -n kube-system packet-cloud-config --from-literal=cloud-sa.json=''{"apiKey": "TioEZybKjwCCv5UZ41YjodCnqaWcwr4A","projectID": "7158c8a9-a55e-454e-a1aa-ce5f8937ed10", "eipTag": "cluster-api-provider-packet:cluster-id:kluster-029-displague"}'''
+  - "kubectl apply --kubeconfig /etc/kubernetes/admin.conf -f https://github.com/packethost/packet-ccm/releases/download/v1.1.0/deployment.yaml"
