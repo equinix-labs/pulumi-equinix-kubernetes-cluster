@@ -169,7 +169,46 @@ const createControlPlaneNode = (
       {
         contentType: "text/x-shellscript",
         content: fs.readFileSync(
-          "../../cloud-init/scripts/kubernetes-init.sh",
+          "../../cloud-init/scripts/kubernetes-kubeadm-config.sh",
+          "utf8"
+        ),
+      },
+      {
+        contentType: "text/x-shellscript",
+        content: fs.readFileSync(
+          "../../cloud-init/scripts/kubernetes-kubeadm-certs.sh",
+          "utf8"
+        ),
+      },
+      {
+        contentType: "text/x-shellscript",
+        content: fs.readFileSync(
+          "../../cloud-init/scripts/kubernetes-kubeadm-exec.sh",
+          "utf8"
+        ),
+      },
+      {
+        contentType: "text/x-shellscript",
+        content: fs.readFileSync("../../cloud-init/scripts/helm.sh", "utf8"),
+      },
+      {
+        contentType: "text/x-shellscript",
+        content: fs.readFileSync(
+          "../../cloud-init/scripts/cni-cilium.sh",
+          "utf8"
+        ),
+      },
+      {
+        contentType: "text/x-shellscript",
+        content: fs.readFileSync(
+          "../../cloud-init/scripts/ccm-disable.sh",
+          "utf8"
+        ),
+      },
+      {
+        contentType: "text/x-shellscript",
+        content: fs.readFileSync(
+          "../../cloud-init/scripts/net-deny-metadata.sh",
           "utf8"
         ),
       },

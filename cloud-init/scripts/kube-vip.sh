@@ -1,6 +1,10 @@
 #!/usr/bin/env sh
 set -e
 
+CONTROL_PLANE_IP=$(jq -r ".controlPlaneIp" /tmp/customdata.json)
+
+mkdir -p /etc/kubernetes/manifests
+
 ctr image pull docker.io/plndr/kube-vip:0.3.1
 ctr run \
     --rm \
