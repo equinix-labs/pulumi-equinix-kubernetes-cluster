@@ -6,4 +6,6 @@ This repository is [Experimental](https://github.com/packethost/standards/blob/m
 
 ---
 
-WIP
+## Warning
+
+Currently, we're stuffing a self-signed CA into the custom data of your Equinix Metal instances. This is a rather serious security risk and we don't encourage using this pattern just yet until we tighten this up.

@@ -1,7 +1,8 @@
-import * as pulumi from "@pulumi/pulumi";
 import * as cloudinit from "@pulumi/cloudinit";
 import * as metal from "@pulumi/equinix-metal";
+import * as pulumi from "@pulumi/pulumi";
 import * as random from "@pulumi/random";
+import * as tls from "@pulumi/tls";
 import * as fs from "fs";
 
 type ControlPlaneNode = metal.Device;
@@ -18,54 +19,30 @@ export interface ControlPlaneConfig {
 export interface ControlPlane {
   ipAddress: pulumi.Output<string>;
   joinToken: pulumi.Output<string>;
-  certificateKey: pulumi.Output<string>;
+  certificatePrivateKey: pulumi.Output<string>;
+  certificateCert: pulumi.Output<string>;
 }
-
-const cloudConfig = new cloudinit.Config("control-plane", {
-  gzip: false,
-  base64Encode: true,
-  parts: [
-    {
-      contentType: "cloud-config",
-      content: fs.readFileSync(
-        "../../cloud-init/configs/metadata.yaml",
-        "utf8"
-      ),
-    },
-    {
-      contentType: "cloud-config",
-      content: fs.readFileSync(
-        "../../cloud-init/configs/kubernetes.yaml",
-        "utf8"
-      ),
-    },
-    {
-      contentType: "x-shellscript",
-      content: fs.readFileSync(
-        "../../cloud-init/scripts/add-bgp-routes.sh",
-        "utf8"
-      ),
-    },
-    {
-      contentType: "x-shellscript",
-      content: fs.readFileSync("../../cloud-init/scripts/kube-vip.sh", "utf8"),
-    },
-    {
-      contentType: "x-shellscript",
-      content: fs.readFileSync(
-        "../../cloud-init/scripts/join-cluster.sh",
-        "utf8"
-      ),
-    },
-  ],
-});
 
 export const createControlPlane = (
   config: ControlPlaneConfig
 ): ControlPlane => {
-  const certificateKey = new random.RandomString("certificateKey", {
-    length: 32,
-    special: false,
+  const privateKey = new tls.PrivateKey("certificateAuthority", {
+    algorithm: "RSA",
+    rsaBits: 2048,
+  });
+
+  const certificateAuthority = new tls.SelfSignedCert("certificateAuthority", {
+    keyAlgorithm: "RSA",
+    validityPeriodHours: 87600,
+    earlyRenewalHours: 168,
+    isCaCertificate: true,
+    privateKeyPem: privateKey.privateKeyPem,
+    allowedUses: ["cert_signing", "digital_signature", "key_encipherment"],
+    subjects: [
+      {
+        commonName: config.name,
+      },
+    ],
   });
 
   const joinTokenLeft = new random.RandomString("joinTokenLeft", {
@@ -85,16 +62,17 @@ export const createControlPlane = (
   });
 
   const ip = new metal.ReservedIpBlock(`${config.name}-control-plane`, {
-    projectId: "7158c8a9-a55e-454e-a1aa-ce5f8937ed10",
-    metro: "am",
+    projectId: config.project,
+    metro: config.metro,
     type: "public_ipv4",
     quantity: 1,
   });
 
-  const controlPlane = {
+  const controlPlane: ControlPlane = {
     ipAddress: ip.address,
     joinToken: pulumi.interpolate`${joinTokenLeft.result}.${joinTokenRight.result}`,
-    certificateKey: certificateKey.result,
+    certificatePrivateKey: privateKey.privateKeyPem,
+    certificateCert: certificateAuthority.certPem,
   };
 
   const controlPlane1: ControlPlaneNode = createControlPlaneNode(
@@ -128,6 +106,76 @@ const createControlPlaneNode = (
   controlPlane: ControlPlane,
   dependsOn: ControlPlaneNode[]
 ): ControlPlaneNode => {
+  const cloudConfig = cloudinit.getConfig({
+    gzip: false,
+    base64Encode: false,
+    parts: [
+      {
+        contentType: "text/x-shellscript",
+        content: fs.readFileSync(
+          "../../cloud-init/scripts/wait-for-bgp-enabled.sh",
+          "utf8"
+        ),
+      },
+      {
+        contentType: "text/x-shellscript",
+        content: fs.readFileSync(
+          "../../cloud-init/scripts/download-metadata.sh",
+          "utf8"
+        ),
+      },
+      {
+        contentType: "text/x-shellscript",
+        content: fs.readFileSync(
+          "../../cloud-init/scripts/add-bgp-routes.sh",
+          "utf8"
+        ),
+      },
+      {
+        contentType: "text/x-shellscript",
+        content: fs.readFileSync(
+          "../../cloud-init/scripts/base-packages.sh",
+          "utf8"
+        ),
+      },
+      {
+        contentType: "text/x-shellscript",
+        content: fs.readFileSync(
+          "../../cloud-init/scripts/containerd.sh",
+          "utf8"
+        ),
+      },
+      {
+        contentType: "text/x-shellscript",
+        content: fs.readFileSync(
+          "../../cloud-init/scripts/kube-vip.sh",
+          "utf8"
+        ),
+      },
+      {
+        contentType: "text/x-shellscript",
+        content: fs.readFileSync(
+          "../../cloud-init/scripts/kubernetes-prerequisites.sh",
+          "utf8"
+        ),
+      },
+      {
+        contentType: "text/x-shellscript",
+        content: fs.readFileSync(
+          "../../cloud-init/scripts/kubernetes-packages.sh",
+          "utf8"
+        ),
+      },
+      {
+        contentType: "text/x-shellscript",
+        content: fs.readFileSync(
+          "../../cloud-init/scripts/kubernetes-init.sh",
+          "utf8"
+        ),
+      },
+    ],
+  });
+
   const device = new metal.Device(
     `${config.name}-control-plane-${number}`,
     {
@@ -139,21 +187,22 @@ const createControlPlaneNode = (
       projectId: config.project,
       customData: pulumi
         .all([
-          controlPlane.certificateKey,
           controlPlane.joinToken,
           controlPlane.ipAddress,
+          controlPlane.certificatePrivateKey,
+          controlPlane.certificateCert,
         ])
-        .apply(([certificateKey, joinToken, ipAddress]) =>
-          JSON.stringify({
-            kubernetesVersion: config.kubernetesVersion,
-            joinToken: joinToken,
-            controlPlaneIp: ipAddress,
-            certificateKey: certificateKey,
-          })
+        .apply(
+          ([joinToken, ipAddress, certificatePrivateKey, certificateCert]) =>
+            JSON.stringify({
+              kubernetesVersion: config.kubernetesVersion,
+              joinToken: joinToken,
+              controlPlaneIp: ipAddress,
+              certificatePrivateKey: certificatePrivateKey,
+              certificateCert: certificateCert,
+            })
         ),
-      userData: cloudConfig.rendered.apply(
-        (cloudConfig) => `#cloud-config\n\n${cloudConfig}`
-      ),
+      userData: cloudConfig.then((c) => c.rendered),
     },
     {
       dependsOn,
