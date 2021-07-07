@@ -11,11 +11,3 @@ else
 fi
 
 rm /etc/kubernetes/{init,join}.yaml
-
-cat >> /etc/network/interfaces <<EOF
-auto lo:0
-iface lo:0 inet static
-    address ${CONTROL_PLANE_IP}
-    netmask 255.255.255.255
-EOF
-ifup lo:0
