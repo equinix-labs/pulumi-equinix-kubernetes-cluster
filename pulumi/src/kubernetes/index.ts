@@ -2,7 +2,7 @@ import * as cloudinit from "@pulumi/cloudinit";
 import * as metal from "@pulumi/equinix-metal";
 import * as pulumi from "@pulumi/pulumi";
 import * as random from "@pulumi/random";
-import * as tls from "@pulumi/tls";
+import * as pki from "./pki";
 import * as fs from "fs";
 
 type ControlPlaneNode = metal.Device;
@@ -19,31 +19,45 @@ export interface ControlPlaneConfig {
 export interface ControlPlane {
   ipAddress: pulumi.Output<string>;
   joinToken: pulumi.Output<string>;
-  certificatePrivateKey: pulumi.Output<string>;
-  certificateCert: pulumi.Output<string>;
+  certificateAuthorityKey: pulumi.Output<string>;
+  certificateAuthorityCert: pulumi.Output<string>;
+  serviceAccountsPrivateKey: pulumi.Output<string>;
+  serviceAccountsPublicKey: pulumi.Output<string>;
+  serviceAccountsCert: pulumi.Output<string>;
+  frontProxyPrivateKey: pulumi.Output<string>;
+  frontProxyCert: pulumi.Output<string>;
+  etcdPrivateKey: pulumi.Output<string>;
+  etcdCert: pulumi.Output<string>;
+}
+
+interface ControlPlaneCertificates {
+  serviceAccount: pki.KeyAndCert;
+  frontProxy: pki.KeyAndCert;
+  etcd: pki.KeyAndCert;
 }
 
 export const createControlPlane = (
   config: ControlPlaneConfig
 ): ControlPlane => {
-  const privateKey = new tls.PrivateKey("certificateAuthority", {
-    algorithm: "RSA",
-    rsaBits: 2048,
-  });
+  const certificateAuthority = pki.createCertificateAuthority(config.name);
 
-  const certificateAuthority = new tls.SelfSignedCert("certificateAuthority", {
-    keyAlgorithm: "RSA",
-    validityPeriodHours: 87600,
-    earlyRenewalHours: 168,
-    isCaCertificate: true,
-    privateKeyPem: privateKey.privateKeyPem,
-    allowedUses: ["cert_signing", "digital_signature", "key_encipherment"],
-    subjects: [
-      {
-        commonName: config.name,
-      },
-    ],
-  });
+  const certificates: ControlPlaneCertificates = {
+    serviceAccount: pki.createKeyAndCert({
+      name: "service-accounts",
+      certificateAuthority,
+      isCertificateAuthority: false,
+    }),
+    frontProxy: pki.createKeyAndCert({
+      name: "front-proxy",
+      certificateAuthority,
+      isCertificateAuthority: true,
+    }),
+    etcd: pki.createKeyAndCert({
+      name: "etcd",
+      certificateAuthority,
+      isCertificateAuthority: true,
+    }),
+  };
 
   const joinTokenLeft = new random.RandomString("joinTokenLeft", {
     length: 6,
@@ -71,8 +85,17 @@ export const createControlPlane = (
   const controlPlane: ControlPlane = {
     ipAddress: ip.address,
     joinToken: pulumi.interpolate`${joinTokenLeft.result}.${joinTokenRight.result}`,
-    certificatePrivateKey: privateKey.privateKeyPem,
-    certificateCert: certificateAuthority.certPem,
+    certificateAuthorityKey: certificateAuthority.privateKey.privateKeyPem,
+    certificateAuthorityCert: certificateAuthority.certificate.certPem,
+    serviceAccountsPrivateKey:
+      certificates.serviceAccount.privateKey.privateKeyPem,
+    serviceAccountsPublicKey:
+      certificates.serviceAccount.privateKey.publicKeyPem,
+    serviceAccountsCert: certificates.serviceAccount.certificate.certPem,
+    frontProxyPrivateKey: certificates.frontProxy.privateKey.privateKeyPem,
+    frontProxyCert: certificates.frontProxy.certificate.certPem,
+    etcdPrivateKey: certificates.etcd.privateKey.privateKeyPem,
+    etcdCert: certificates.etcd.certificate.certPem,
   };
 
   const controlPlane1: ControlPlaneNode = createControlPlaneNode(
@@ -228,17 +251,43 @@ const createControlPlaneNode = (
         .all([
           controlPlane.joinToken,
           controlPlane.ipAddress,
-          controlPlane.certificatePrivateKey,
-          controlPlane.certificateCert,
+          controlPlane.certificateAuthorityKey,
+          controlPlane.certificateAuthorityCert,
+          controlPlane.serviceAccountsPrivateKey,
+          controlPlane.serviceAccountsPublicKey,
+          controlPlane.serviceAccountsCert,
+          controlPlane.frontProxyPrivateKey,
+          controlPlane.frontProxyCert,
+          controlPlane.etcdPrivateKey,
+          controlPlane.etcdCert,
         ])
         .apply(
-          ([joinToken, ipAddress, certificatePrivateKey, certificateCert]) =>
+          ([
+            joinToken,
+            ipAddress,
+            certificateAuthorityKey,
+            certificateAuthorityCert,
+            serviceAccountKey,
+            serviceAccountPublicKey,
+            serviceAccountCert,
+            frontProxyKey,
+            frontProxyCert,
+            etcdKey,
+            etcdCert,
+          ]) =>
             JSON.stringify({
               kubernetesVersion: config.kubernetesVersion,
               joinToken: joinToken,
               controlPlaneIp: ipAddress,
-              certificatePrivateKey: certificatePrivateKey,
-              certificateCert: certificateCert,
+              certificateAuthorityKey,
+              certificateAuthorityCert,
+              serviceAccountKey,
+              serviceAccountPublicKey,
+              serviceAccountCert,
+              frontProxyKey,
+              frontProxyCert,
+              etcdKey,
+              etcdCert,
             })
         ),
       userData: cloudConfig.then((c) => c.rendered),
