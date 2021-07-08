@@ -19,51 +19,55 @@ export interface Config {
 }
 
 export class WorkerPool extends ComponentResource {
-  constructor(name: string, cluster: Cluster, config: Config) {
-    super(`${PREFIX}:kubernetes:WorkerPool`, name, config, { parent: cluster });
+  constructor(cluster: Cluster, name: string, config: Config) {
+    super(
+      `${PREFIX}:kubernetes:WorkerPool`,
+      `${cluster.name}-${name}`,
+      config,
+      { parent: cluster }
+    );
 
     for (let i = 1; i <= config.replicas; i++) {
-      createWorkerPoolNode(this, name, cluster, config, i);
+      this.createWorkerPoolNode(name, cluster, config, i);
     }
   }
+
+  createWorkerPoolNode(
+    name: string,
+    cluster: Cluster,
+    config: Config,
+    num: number
+  ): WorkerNode {
+    const device = new metal.Device(
+      `${cluster.name}-${name}-${num}`,
+      {
+        hostname: `${cluster.name}-${name}-${num}`,
+        metro: cluster.config.metro,
+        billingCycle: metal.BillingCycle.Hourly,
+        plan: config.plan,
+        operatingSystem: metal.OperatingSystem.Ubuntu2004,
+        projectId: cluster.config.project,
+        customData: all([cluster.joinToken(), cluster.controlPlaneIp()]).apply(
+          ([joinToken, controlPlaneIp]) =>
+            JSON.stringify({
+              kubernetesVersion: config.kubernetesVersion,
+              joinToken,
+              controlPlaneIp,
+            })
+        ),
+        userData: cloudConfig.then((c) => c.rendered),
+      },
+      {
+        parent: this,
+        dependsOn: cluster.controlPlane
+          ? cluster.controlPlane.controlPlaneDevices.map((cp) => cp.device)
+          : [],
+      }
+    );
+
+    return device;
+  }
 }
-
-const createWorkerPoolNode = (
-  workerPool: WorkerPool,
-  name: string,
-  cluster: Cluster,
-  config: Config,
-  num: number
-): WorkerNode => {
-  const device = new metal.Device(
-    `${name}-${num}`,
-    {
-      hostname: `${name}-${num}`,
-      metro: cluster.config.metro,
-      billingCycle: metal.BillingCycle.Hourly,
-      plan: config.plan,
-      operatingSystem: metal.OperatingSystem.Ubuntu2004,
-      projectId: cluster.config.project,
-      customData: all([cluster.joinToken, cluster.controlPlaneIp]).apply(
-        ([joinToken, controlPlaneIp]) =>
-          JSON.stringify({
-            kubernetesVersion: config.kubernetesVersion,
-            joinToken,
-            controlPlaneIp,
-          })
-      ),
-      userData: cloudConfig.then((c) => c.rendered),
-    },
-    {
-      parent: workerPool,
-      dependsOn: cluster.controlPlane
-        ? cluster.controlPlane.controlPlaneDevices.map((cp) => cp.device)
-        : [],
-    }
-  );
-
-  return device;
-};
 
 const cloudConfig = cloudinit.getConfig({
   gzip: false,

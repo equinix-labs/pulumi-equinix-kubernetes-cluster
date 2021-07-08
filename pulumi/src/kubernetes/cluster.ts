@@ -30,6 +30,12 @@ export class Cluster extends ComponentResource {
   }
 
   public createControlPlane(config: ControlPlaneConfig) {
+    if (this.controlPlane) {
+      throw new Error(
+        `Control plane for cluster ${this.name} already specified`
+      );
+    }
+
     this.controlPlane = new ControlPlane(this, {
       highAvailability: config.highAvailability,
       plan: config.plan,
@@ -45,7 +51,7 @@ export class Cluster extends ComponentResource {
   }
 
   public createWorkerPool(name: string, config: WorkerPoolConfig) {
-    this.workerPools[name] = new WorkerPool(name, this, config);
+    this.workerPools[name] = new WorkerPool(this, name, config);
   }
 }
 

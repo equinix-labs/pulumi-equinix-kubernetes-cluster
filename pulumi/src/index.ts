@@ -9,12 +9,12 @@ const cluster = new Cluster("rawkode", {
 });
 
 cluster.createControlPlane({
-  highAvailability: true,
+  highAvailability: false,
   plan: metal.Plan.C1SmallX86,
 });
 
 cluster.createWorkerPool("primary", {
-  kubernetesVersion: "1.21.1",
+  kubernetesVersion: "1.21.2",
   plan: metal.Plan.C1SmallX86,
-  replicas: 1,
+  replicas: 2,
 });

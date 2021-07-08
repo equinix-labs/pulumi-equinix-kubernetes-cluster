@@ -53,19 +53,19 @@ export class ControlPlane extends ComponentResource {
     this.certificateAuthority = new CertificateAuthority(this);
 
     this.serviceAccountCertificate = new KeyAndCert(
-      "service-accounts",
+      this.createName("service-accounts"),
       false,
       this.certificateAuthority
     );
 
     this.frontProxyCertificate = new KeyAndCert(
-      "front-proxy",
+      this.createName("front-proxy"),
       true,
       this.certificateAuthority
     );
 
     this.etcdCertificate = new KeyAndCert(
-      "etcd",
+      this.createName("etcd"),
       true,
       this.certificateAuthority
     );
@@ -82,6 +82,10 @@ export class ControlPlane extends ComponentResource {
       const controlPlane3 = this.createDevice(3, [controlPlane2.device]);
       this.controlPlaneDevices.push(controlPlane3);
     }
+  }
+
+  createName(name: string) {
+    return `${this.cluster.name}-${name}`;
   }
 
   createDevice(i: number, dependsOn: metal.Device[] = []): ControlPlaneNode {
