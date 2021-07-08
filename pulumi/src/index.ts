@@ -1,18 +1,20 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as metal from "@pulumi/equinix-metal";
-import { ControlPlaneConfig, createControlPlane } from "./kubernetes";
+import { Cluster } from "./kubernetes";
 
-const stack = pulumi.runtime.getStack();
-const projectConfig = new pulumi.Config();
+const cluster = new Cluster("rawkode", {
+  kubernetesVersion: "1.21.2",
+  metro: "am",
+  project: "7158c8a9-a55e-454e-a1aa-ce5f8937ed10",
+});
 
-const controlPlane = createControlPlane({
-  name: stack,
-  highlyAvailable: true,
+cluster.createControlPlane({
+  highAvailability: true,
   plan: metal.Plan.C1SmallX86,
+});
 
-  // These come from a config to allow them to be configured differently in different
-  // Pulumi stacks, where as the values above are unlikely to change across stacks.
-  kubernetesVersion: projectConfig.require("kubernetesVersion"),
-  project: projectConfig.require("projectId"),
-  metro: projectConfig.require("metro"),
+cluster.createWorkerPool("primary", {
+  kubernetesVersion: "1.21.1",
+  plan: metal.Plan.C1SmallX86,
+  replicas: 1,
 });
