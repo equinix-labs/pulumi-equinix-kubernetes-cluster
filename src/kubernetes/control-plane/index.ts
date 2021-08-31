@@ -21,7 +21,6 @@ interface ControlPlaneNode {
 export class ControlPlane extends ComponentResource {
   readonly cluster: Cluster;
   readonly config: Config;
-  readonly elasticIp: metal.ReservedIpBlock;
   readonly certificateAuthority: CertificateAuthority;
   readonly serviceAccountCertificate: KeyAndCert;
   readonly frontProxyCertificate: KeyAndCert;
@@ -36,19 +35,6 @@ export class ControlPlane extends ComponentResource {
 
     this.cluster = cluster;
     this.config = config;
-
-    this.elasticIp = new metal.ReservedIpBlock(
-      `${cluster.name}-control-plane`,
-      {
-        projectId: cluster.config.project,
-        metro: cluster.config.metro,
-        type: "public_ipv4",
-        quantity: 1,
-      },
-      {
-        parent: this,
-      }
-    );
 
     this.certificateAuthority = new CertificateAuthority(this);
 
@@ -105,7 +91,8 @@ export class ControlPlane extends ComponentResource {
         customData: pulumi
           .all([
             this.joinToken.token,
-            this.elasticIp.address,
+            this.cluster.controlPlaneIp,
+            this.cluster.ingressIp,
             this.certificateAuthority.privateKey.privateKeyPem,
             this.certificateAuthority.certificate.certPem,
             this.serviceAccountCertificate.privateKey.privateKeyPem,
@@ -119,6 +106,7 @@ export class ControlPlane extends ComponentResource {
             ([
               joinToken,
               controlPlaneIp,
+              ingressIp,
               certificateAuthorityKey,
               certificateAuthorityCert,
               serviceAccountKey,
@@ -132,6 +120,7 @@ export class ControlPlane extends ComponentResource {
                 kubernetesVersion: this.cluster.config.kubernetesVersion,
                 joinToken,
                 controlPlaneIp,
+                ingressIp,
                 certificateAuthorityKey,
                 certificateAuthorityCert,
                 serviceAccountKey,

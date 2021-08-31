@@ -8,7 +8,7 @@ helm repo add cilium https://helm.cilium.io/
 helm template cilium/cilium  \
 		--version 1.10.2 \
 		--namespace kube-system \
-		--set image.repository=docker.io/cilium/cilium \
+		--set image.repository=quay.io/cilium/cilium \
 		--set global.ipam.mode=cluster-pool \
 		--set global.ipam.operator.clusterPoolIPv4PodCIDR=192.168.0.0/16 \
 		--set global.ipam.operator.clusterPoolIPv4MaskSize=23 \

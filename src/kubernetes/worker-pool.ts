@@ -1,8 +1,4 @@
-import {
-  all,
-  ComponentResource,
-  ComponentResourceOptions,
-} from "@pulumi/pulumi";
+import { all, ComponentResource, Output } from "@pulumi/pulumi";
 import * as cloudinit from "@pulumi/cloudinit";
 import * as metal from "@pulumi/equinix-metal";
 import * as fs from "fs";
@@ -19,6 +15,8 @@ export interface Config {
 }
 
 export class WorkerPool extends ComponentResource {
+  readonly cluster: Cluster;
+
   constructor(cluster: Cluster, name: string, config: Config) {
     super(
       `${PREFIX}:kubernetes:WorkerPool`,
@@ -26,6 +24,8 @@ export class WorkerPool extends ComponentResource {
       config,
       { parent: cluster }
     );
+
+    this.cluster = cluster;
 
     for (let i = 1; i <= config.replicas; i++) {
       this.createWorkerPoolNode(name, cluster, config, i);
@@ -47,8 +47,8 @@ export class WorkerPool extends ComponentResource {
         plan: config.plan,
         operatingSystem: metal.OperatingSystem.Ubuntu2004,
         projectId: cluster.config.project,
-        customData: all([cluster.joinToken(), cluster.controlPlaneIp()]).apply(
-          ([joinToken, controlPlaneIp]) =>
+        customData: all([cluster.joinToken(), cluster.controlPlaneIp]).apply(
+          ([joinToken, controlPlaneIp, teleportSecret]) =>
             JSON.stringify({
               kubernetesVersion: config.kubernetesVersion,
               joinToken,
@@ -76,49 +76,46 @@ const cloudConfig = cloudinit.getConfig({
     {
       contentType: "text/x-shellscript",
       content: fs.readFileSync(
-        "../../cloud-init/scripts/download-metadata.sh",
+        "../cloud-init/scripts/download-metadata.sh",
         "utf8"
       ),
     },
     {
       contentType: "text/x-shellscript",
       content: fs.readFileSync(
-        "../../cloud-init/scripts/base-packages.sh",
+        "../cloud-init/scripts/base-packages.sh",
+        "utf8"
+      ),
+    },
+    {
+      contentType: "text/x-shellscript",
+      content: fs.readFileSync("../cloud-init/scripts/containerd.sh", "utf8"),
+    },
+    {
+      contentType: "text/x-shellscript",
+      content: fs.readFileSync(
+        "../cloud-init/scripts/kubernetes-prerequisites.sh",
         "utf8"
       ),
     },
     {
       contentType: "text/x-shellscript",
       content: fs.readFileSync(
-        "../../cloud-init/scripts/containerd.sh",
+        "../cloud-init/scripts/kubernetes-packages.sh",
         "utf8"
       ),
     },
     {
       contentType: "text/x-shellscript",
       content: fs.readFileSync(
-        "../../cloud-init/scripts/kubernetes-prerequisites.sh",
+        "../cloud-init/scripts/kubernetes-kubeadm-worker-join.sh",
         "utf8"
       ),
     },
     {
       contentType: "text/x-shellscript",
       content: fs.readFileSync(
-        "../../cloud-init/scripts/kubernetes-packages.sh",
-        "utf8"
-      ),
-    },
-    {
-      contentType: "text/x-shellscript",
-      content: fs.readFileSync(
-        "../../cloud-init/scripts/kubernetes-kubeadm-worker-join.sh",
-        "utf8"
-      ),
-    },
-    {
-      contentType: "text/x-shellscript",
-      content: fs.readFileSync(
-        "../../cloud-init/scripts/net-deny-metadata.sh",
+        "../cloud-init/scripts/net-deny-metadata.sh",
         "utf8"
       ),
     },
