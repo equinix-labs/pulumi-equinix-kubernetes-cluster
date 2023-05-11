@@ -8,6 +8,13 @@ export const cloudConfig = cloudinit.getConfig({
     {
       contentType: "text/x-shellscript",
       content: fs.readFileSync(
+        "../cloud-init/scripts/base-packages.sh",
+        "utf8"
+      ),
+    },
+    {
+      contentType: "text/x-shellscript",
+      content: fs.readFileSync(
         "../cloud-init/scripts/wait-for-bgp-enabled.sh",
         "utf8"
       ),
@@ -23,13 +30,6 @@ export const cloudConfig = cloudinit.getConfig({
       contentType: "text/x-shellscript",
       content: fs.readFileSync(
         "../cloud-init/scripts/add-bgp-routes.sh",
-        "utf8"
-      ),
-    },
-    {
-      contentType: "text/x-shellscript",
-      content: fs.readFileSync(
-        "../cloud-init/scripts/base-packages.sh",
         "utf8"
       ),
     },
