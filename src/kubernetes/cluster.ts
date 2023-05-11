@@ -1,5 +1,5 @@
 import { ComponentResource, Output } from "@pulumi/pulumi";
-import * as metal from "@pulumi/equinix-metal";
+import * as equinix from "@equinix-labs/pulumi-equinix";
 
 import { PREFIX } from "./meta";
 import { WorkerPool, Config as WorkerPoolConfig } from "./worker-pool";
@@ -25,7 +25,7 @@ export class Cluster extends ComponentResource {
     this.name = name;
     this.config = config;
 
-    this.controlPlaneIp = new metal.ReservedIpBlock(
+    this.controlPlaneIp = new equinix.metal.ReservedIpBlock(
       `${name}-control-plane`,
       {
         projectId: config.project,
@@ -38,7 +38,7 @@ export class Cluster extends ComponentResource {
       }
     ).address;
 
-    this.ingressIp = new metal.ReservedIpBlock(
+    this.ingressIp = new equinix.metal.ReservedIpBlock(
       `${name}-ingress`,
       {
         projectId: config.project,

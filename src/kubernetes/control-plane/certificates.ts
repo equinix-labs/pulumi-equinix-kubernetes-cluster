@@ -39,11 +39,9 @@ export class CertificateAuthority extends ComponentResource {
           "server auth",
           "client auth",
         ],
-        subjects: [
-          {
-            commonName: controlPlane.cluster.name,
-          },
-        ],
+        subject: {
+          commonName: controlPlane.cluster.name,
+        },
       },
       { parent: this }
     );
@@ -81,11 +79,9 @@ export class KeyAndCert extends ComponentResource {
       {
         keyAlgorithm: this.privateKey.algorithm,
         privateKeyPem: this.privateKey.privateKeyPem,
-        subjects: [
-          {
-            commonName: name,
-          },
-        ],
+        subject: {
+          commonName: name,
+        },
       },
       { parent: this }
     );

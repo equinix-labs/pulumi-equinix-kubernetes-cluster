@@ -38,11 +38,9 @@ export const createCertificateAuthority = (
     isCaCertificate: true,
     privateKeyPem: privateKey.privateKeyPem,
     allowedUses,
-    subjects: [
-      {
-        commonName: name,
-      },
-    ],
+    subject: {
+      commonName: name,
+    }
   });
 
   return { privateKey, certificate };
@@ -57,11 +55,9 @@ export const createKeyAndCert = (args: CreateKeyAndCertArgs): KeyAndCert => {
   const certificateRequest = new tls.CertRequest(args.name, {
     keyAlgorithm: privateKey.algorithm,
     privateKeyPem: privateKey.privateKeyPem,
-    subjects: [
-      {
-        commonName: args.name,
-      },
-    ],
+    subject: {
+      commonName: args.name,
+    }
   });
 
   const certificate = new tls.LocallySignedCert(args.name, {
