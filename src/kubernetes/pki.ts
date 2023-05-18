@@ -32,7 +32,6 @@ export const createCertificateAuthority = (
   });
 
   const certificate = new tls.SelfSignedCert(name, {
-    keyAlgorithm: "RSA",
     validityPeriodHours: 87600,
     earlyRenewalHours: 168,
     isCaCertificate: true,
@@ -53,7 +52,6 @@ export const createKeyAndCert = (args: CreateKeyAndCertArgs): KeyAndCert => {
   });
 
   const certificateRequest = new tls.CertRequest(args.name, {
-    keyAlgorithm: privateKey.algorithm,
     privateKeyPem: privateKey.privateKeyPem,
     subject: {
       commonName: args.name,
@@ -62,7 +60,6 @@ export const createKeyAndCert = (args: CreateKeyAndCertArgs): KeyAndCert => {
 
   const certificate = new tls.LocallySignedCert(args.name, {
     certRequestPem: certificateRequest.certRequestPem,
-    caKeyAlgorithm: args.certificateAuthority.privateKey.algorithm,
     caPrivateKeyPem: args.certificateAuthority.privateKey.privateKeyPem,
     caCertPem: args.certificateAuthority.certificate.certPem,
     isCaCertificate: args.isCertificateAuthority,

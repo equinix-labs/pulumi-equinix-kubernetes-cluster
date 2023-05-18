@@ -28,16 +28,15 @@ export class CertificateAuthority extends ComponentResource {
     this.certificate = new tls.SelfSignedCert(
       controlPlane.cluster.name,
       {
-        keyAlgorithm: "RSA",
         validityPeriodHours: 87600,
         earlyRenewalHours: 168,
         isCaCertificate: true,
         privateKeyPem: this.privateKey.privateKeyPem,
         allowedUses: [
-          "signing",
-          "key encipherment",
-          "server auth",
-          "client auth",
+          "cert_signing",
+          "key_encipherment",
+          "server_auth",
+          "client_auth",
         ],
         subject: {
           commonName: controlPlane.cluster.name,
@@ -77,7 +76,6 @@ export class KeyAndCert extends ComponentResource {
     this.certificateSigningRequest = new tls.CertRequest(
       name,
       {
-        keyAlgorithm: this.privateKey.algorithm,
         privateKeyPem: this.privateKey.privateKeyPem,
         subject: {
           commonName: name,
@@ -90,17 +88,16 @@ export class KeyAndCert extends ComponentResource {
       name,
       {
         certRequestPem: this.certificateSigningRequest.certRequestPem,
-        caKeyAlgorithm: certificateAuthority.privateKey.algorithm,
         caPrivateKeyPem: certificateAuthority.privateKey.privateKeyPem,
         caCertPem: certificateAuthority.certificate.certPem,
         isCaCertificate: isCertificateAuthority,
         validityPeriodHours: 87600,
         earlyRenewalHours: 168,
         allowedUses: [
-          "signing",
-          "key encipherment",
-          "server auth",
-          "client auth",
+          "cert_signing",
+          "key_encipherment",
+          "server_auth",
+          "client_auth",
         ],
       },
       { parent: this }
