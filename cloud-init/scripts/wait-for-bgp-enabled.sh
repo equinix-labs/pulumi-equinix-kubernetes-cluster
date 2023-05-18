@@ -1,4 +1,7 @@
 #!/usr/bin/env sh
+
+echo "Wait for BGP enabled..."
+
 until jq -r -e ".bgp_neighbors" /tmp/metadata.json
 do
   sleep 10

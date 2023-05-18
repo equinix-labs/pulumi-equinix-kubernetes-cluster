@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
+echo "Kubernetes prerequisites..."
+
 sed -ri '/\sswap\s/s/^#?/#/' /etc/fstab
 swapoff -a
 mount -a

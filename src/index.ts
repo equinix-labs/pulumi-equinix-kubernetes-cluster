@@ -15,7 +15,7 @@ const project = new equinix.metal.Project("example", {
 });
 
 const cluster = new Cluster("example", {
-  kubernetesVersion: config.get("kubernetesVersion") || "1.27.0",
+  kubernetesVersion: config.get("kubernetesVersion") || "1.24.7",
   metro: config.get("metalMetro") || "SV",
   project: project.id,
 });

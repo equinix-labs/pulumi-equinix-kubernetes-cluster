@@ -118,6 +118,7 @@ export class ControlPlane extends ComponentResource {
             ]) =>
               JSON.stringify({
                 kubernetesVersion: this.cluster.config.kubernetesVersion,
+                controlPlaneRole: i == 1 ? "primary" : "replica",
                 joinToken,
                 controlPlaneIp,
                 ingressIp,

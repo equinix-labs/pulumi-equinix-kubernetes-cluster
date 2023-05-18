@@ -8,7 +8,7 @@ export const cloudConfig = cloudinit.getConfig({
     {
       contentType: "text/x-shellscript",
       content: fs.readFileSync(
-        "../cloud-init/scripts/base-packages.sh",
+        "../cloud-init/scripts/pre-install.sh",
         "utf8"
       ),
     },
@@ -29,13 +29,16 @@ export const cloudConfig = cloudinit.getConfig({
     {
       contentType: "text/x-shellscript",
       content: fs.readFileSync(
-        "../cloud-init/scripts/add-bgp-routes.sh",
+        "../cloud-init/scripts/network-config-cp.sh",
         "utf8"
       ),
     },
     {
       contentType: "text/x-shellscript",
-      content: fs.readFileSync("../cloud-init/scripts/containerd.sh", "utf8"),
+      content: fs.readFileSync(
+        "../cloud-init/scripts/containerd-prerequisites.sh",
+        "utf8"
+      ),
     },
     {
       contentType: "text/x-shellscript",
@@ -47,14 +50,14 @@ export const cloudConfig = cloudinit.getConfig({
     {
       contentType: "text/x-shellscript",
       content: fs.readFileSync(
-        "../cloud-init/scripts/kubernetes-packages.sh",
+        "../cloud-init/scripts/crictl-config.sh",
         "utf8"
       ),
     },
     {
       contentType: "text/x-shellscript",
       content: fs.readFileSync(
-        "../cloud-init/scripts/kubernetes-kubeadm-config.sh",
+        "../cloud-init/scripts/kubelet-config.sh",
         "utf8"
       ),
     },
@@ -67,27 +70,43 @@ export const cloudConfig = cloudinit.getConfig({
     },
     {
       contentType: "text/x-shellscript",
-      content: fs.readFileSync("../cloud-init/scripts/kube-vip.sh", "utf8"),
-    },
-    {
-      contentType: "text/x-shellscript",
       content: fs.readFileSync(
-        "../cloud-init/scripts/kubernetes-kubeadm-exec.sh",
+        "../cloud-init/scripts/kubernetes-kubeadm-packages.sh",
         "utf8"
       ),
     },
     {
       contentType: "text/x-shellscript",
-      content: fs.readFileSync("../cloud-init/scripts/helm.sh", "utf8"),
-    },
-    {
-      contentType: "text/x-shellscript",
-      content: fs.readFileSync("../cloud-init/scripts/cni-cilium.sh", "utf8"),
+      content: fs.readFileSync(
+        "../cloud-init/scripts/kubernetes-kubeadm-cp-config.sh",
+        "utf8"
+      ),
     },
     {
       contentType: "text/x-shellscript",
       content: fs.readFileSync(
-        "../cloud-init/scripts/kube-vip-daemonset.sh",
+        "../cloud-init/scripts/kube-vip-cp-ha-bgp.sh",
+        "utf8"
+      ),
+    },
+    {
+      contentType: "text/x-shellscript",
+      content: fs.readFileSync(
+        "../cloud-init/scripts/kubernetes-kubeadm-cp-join.sh",
+        "utf8"
+      ),
+    },
+    {
+      contentType: "text/x-shellscript",
+      content: fs.readFileSync(
+        "../cloud-init/scripts/helm.sh",
+        "utf8"
+      ),
+    },
+    {
+      contentType: "text/x-shellscript",
+      content: fs.readFileSync(
+        "../cloud-init/scripts/cni-cilium.sh",
         "utf8"
       ),
     },
@@ -100,7 +119,17 @@ export const cloudConfig = cloudinit.getConfig({
     },
     {
       contentType: "text/x-shellscript",
-      content: fs.readFileSync("../cloud-init/scripts/ingress.sh", "utf8"),
+      content: fs.readFileSync(
+        "../cloud-init/scripts/ingress.sh",
+        "utf8"
+      ),
+    },
+    {
+      contentType: "text/x-shellscript",
+      content: fs.readFileSync(
+        "../cloud-init/scripts/post-install.sh",
+        "utf8"
+      ),
     },
   ],
 });

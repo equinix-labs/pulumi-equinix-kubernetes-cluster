@@ -75,6 +75,13 @@ const cloudConfig = cloudinit.getConfig({
     {
       contentType: "text/x-shellscript",
       content: fs.readFileSync(
+        "../cloud-init/scripts/pre-install.sh",
+        "utf8"
+      ),
+    },
+    {
+      contentType: "text/x-shellscript",
+      content: fs.readFileSync(
         "../cloud-init/scripts/download-metadata.sh",
         "utf8"
       ),
@@ -82,13 +89,9 @@ const cloudConfig = cloudinit.getConfig({
     {
       contentType: "text/x-shellscript",
       content: fs.readFileSync(
-        "../cloud-init/scripts/base-packages.sh",
+        "../cloud-init/scripts/containerd-prerequisites.sh",
         "utf8"
       ),
-    },
-    {
-      contentType: "text/x-shellscript",
-      content: fs.readFileSync("../cloud-init/scripts/containerd.sh", "utf8"),
     },
     {
       contentType: "text/x-shellscript",
@@ -100,7 +103,21 @@ const cloudConfig = cloudinit.getConfig({
     {
       contentType: "text/x-shellscript",
       content: fs.readFileSync(
-        "../cloud-init/scripts/kubernetes-packages.sh",
+        "../cloud-init/scripts/kubelet-config.sh",
+        "utf8"
+      ),
+    },
+    {
+      contentType: "text/x-shellscript",
+      content: fs.readFileSync(
+        "../cloud-init/scripts/kubernetes-kubeadm-packages.sh",
+        "utf8"
+      ),
+    },
+    {
+      contentType: "text/x-shellscript",
+      content: fs.readFileSync(
+        "../cloud-init/scripts/kubernetes-kubeadm-worker-config.sh",
         "utf8"
       ),
     },
@@ -115,6 +132,13 @@ const cloudConfig = cloudinit.getConfig({
       contentType: "text/x-shellscript",
       content: fs.readFileSync(
         "../cloud-init/scripts/net-deny-metadata.sh",
+        "utf8"
+      ),
+    },
+    {
+      contentType: "text/x-shellscript",
+      content: fs.readFileSync(
+        "../cloud-init/scripts/post-install.sh",
         "utf8"
       ),
     },

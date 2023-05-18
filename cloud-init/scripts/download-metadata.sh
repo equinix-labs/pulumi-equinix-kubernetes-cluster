@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 set -e
 
-curl -o /tmp/metadata.json -fsSL https://metadata.platformequinix.com/metadata
-jq -r ".customdata" /tmp/metadata.json > /tmp/customdata.json
+echo "Download metadata..."
+
+curl -o /run/metadata.json --retry 10 -fsSL https://metadata.platformequinix.com/metadata
+jq -r ".customdata" /run/metadata.json > /run/customdata.json
