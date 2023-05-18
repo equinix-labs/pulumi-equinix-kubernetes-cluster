@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
-CONTROL_PLANE_IP=$(jq -r ".controlPlaneIp" /tmp/customdata.json)
+echo "Install CNI Cilium..."
+
+CONTROL_PLANE_IP=$(jq -r ".controlPlaneIp" /run/customdata.json)
 
 helm repo add cilium https://helm.cilium.io/
 
@@ -21,6 +23,6 @@ helm template cilium/cilium  \
     --set kubeProxyReplacement=probe \
     --set k8sServiceHost=${CONTROL_PLANE_IP} \
     --set k8sServicePort=6443 \
-		> /tmp/cilium.yaml
+		> /etc/kubernetes/cilium.yaml
 
-kubectl --kubeconfig=/etc/kubernetes/admin.conf apply --wait -f /tmp/cilium.yaml
+kubectl --kubeconfig=/etc/kubernetes/admin.conf apply --wait -f /etc/kubernetes/cilium.yaml
