@@ -2,7 +2,9 @@
 .DS_Store
 .vscode
 /bin/
-/node_modules/
+**/node_modules/
 Pulumi.*.yaml
 .dccache
 package-lock.json
+**/.venv/
+**/__pycache__/

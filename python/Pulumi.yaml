@@ -1,0 +1,4 @@
+name: klustered
+runtime: python
+description: Klustered
+main: src/__main__.py
