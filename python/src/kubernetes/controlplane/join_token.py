@@ -1,6 +1,6 @@
 import pulumi_random as random
 from kubernetes.meta import PREFIX
-from pulumi import ComponentResource, Output
+from pulumi import ComponentResource, Output, ResourceOptions
 
 
 class JoinToken(ComponentResource):
@@ -8,8 +8,7 @@ class JoinToken(ComponentResource):
         super().__init__(
             f"{PREFIX}:kubernetes:JoinToken",
             control_plane.cluster.name,
-            # {},
-            # parent=control_plane,
+            opts=ResourceOptions(parent=control_plane),
         )
 
         name = control_plane.cluster.name
@@ -19,9 +18,9 @@ class JoinToken(ComponentResource):
             length=6,
             special=False,
             lower=True,
-            number=True,
+            numeric=True,
             upper=False,
-            # parent=self,
+            opts=ResourceOptions(parent=self),
         )
 
         right = random.RandomString(
@@ -29,9 +28,9 @@ class JoinToken(ComponentResource):
             length=16,
             special=False,
             lower=True,
-            number=True,
+            numeric=True,
             upper=False,
-            # parent=self,
+            opts=ResourceOptions(parent=self),
         )
 
         self.token = Output.all(left.result, right.result).apply(

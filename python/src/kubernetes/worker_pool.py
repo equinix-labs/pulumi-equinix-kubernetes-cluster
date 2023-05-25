@@ -22,8 +22,8 @@ class WorkerPool(ComponentResource):
         super().__init__(
             f"{PREFIX}:kubernetes:WorkerPool",
             f"{cluster.name}-{name}",
-            # config,
-            # parent=cluster,
+            config.__dict__,
+            ResourceOptions(parent=cluster),
         )
 
         self.cluster = cluster
@@ -43,21 +43,27 @@ class WorkerPool(ComponentResource):
             custom_data=Output.all(
                 cluster.join_token(), cluster.control_plane_ip
             ).apply(
-                lambda join_token, control_plane_ip: Output.json_dumps(
+                lambda values: Output.json_dumps(
                     {
                         "kubernetesVersion": cluster.config.kubernetes_version,
-                        "joinToken": join_token,
-                        "controlPlaneIp": control_plane_ip,
-                    }
+                        "joinToken": values[0],
+                        "controlPlaneIp": values[1],
+                    },
+                    separators=(',', ':')
                 )
             ),
             user_data=cloud_config.rendered,
             opts=ResourceOptions(
                 parent=self,
-                depends_on=cluster.control_plane.control_plane_devices
+                depends_on=list(
+                    map(
+                        lambda cp: cp.device,
+                        cluster.control_plane.control_plane_devices,
+                    )
+                ),
             )
             if cluster.control_plane
-            else [],
+            else None,
         )
 
         return WorkerNode(device)

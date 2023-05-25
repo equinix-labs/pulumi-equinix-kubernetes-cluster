@@ -1,9 +1,6 @@
-import json
 from typing import List
 
 import pulumi_equinix as equinix
-
-# from kubernetes.cluster import Cluster
 from kubernetes.meta import PREFIX
 from pulumi import ComponentResource, Output, ResourceOptions
 
@@ -15,7 +12,7 @@ from .join_token import JoinToken
 class Config:
     def __init__(self, plan: equinix.metal.Plan, high_availability: bool):
         self.plan = plan
-        self.high_availability = bool
+        self.high_availability = high_availability
 
 
 class ControlPlaneNode:
@@ -29,7 +26,9 @@ class ControlPlaneNode:
 class ControlPlane(ComponentResource):
     def __init__(self, cluster, config: Config, opts: ResourceOptions = None):
         super().__init__(
-            f"{PREFIX}:kubernetes:ControlPlane", cluster.name, None, opts, False
+            f"{PREFIX}:kubernetes:ControlPlane",
+            cluster.name,
+            opts=ResourceOptions(parent=cluster),
         )
 
         self.cluster = cluster
@@ -53,14 +52,14 @@ class ControlPlane(ComponentResource):
 
         self.control_plane_devices = []
         control_plane1 = self.create_device(1)
-        self.control_plane_devices.append(control_plane1.device)
+        self.control_plane_devices.append(control_plane1)
 
         if config.high_availability:
-            control_plane2 = self.create_device(2, [control_plane1.device])
-            self.control_plane_devices.append(control_plane2.device)
+            control_plane2 = self.create_device(2, [control_plane1])
+            self.control_plane_devices.append(control_plane2)
 
-            control_plane3 = self.create_device(3, [control_plane2.device])
-            self.control_plane_devices.append(control_plane3.devic)
+            control_plane3 = self.create_device(3, [control_plane2])
+            self.control_plane_devices.append(control_plane3)
 
     def create_name(self, name: str) -> str:
         return f"{self.cluster.name}-{name}"
@@ -91,7 +90,7 @@ class ControlPlane(ComponentResource):
                 self.etcd_certificate.private_key.private_key_pem,
                 self.etcd_certificate.certificate.cert_pem,
             ).apply(
-                lambda values: json.dumps(
+                lambda values: Output.json_dumps(
                     {
                         "kubernetesVersion": self.cluster.config.kubernetes_version,
                         "controlPlaneRole": "primary" if i == 1 else "replica",
@@ -106,11 +105,12 @@ class ControlPlane(ComponentResource):
                         "frontProxyCert": values[8],
                         "etcdKey": values[9],
                         "etcdCert": values[10],
-                    }
+                    },
+                    separators=(',', ':')
                 )
             ),
             user_data=cloud_config.rendered,
-            opts=ResourceOptions(parent=self, depends_on=depends_on),
+            opts=ResourceOptions(parent=self),
         )
 
         bgp_session = equinix.metal.BgpSession(

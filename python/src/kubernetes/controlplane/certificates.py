@@ -1,8 +1,6 @@
 import pulumi_tls as tls
-
-# from .main import ControlPlane
 from kubernetes.meta import PREFIX
-from pulumi import ComponentResource
+from pulumi import ComponentResource, ResourceOptions
 
 
 class CertificateAuthority(ComponentResource):
@@ -10,13 +8,12 @@ class CertificateAuthority(ComponentResource):
         super().__init__(
             f"{PREFIX}:kubernetes:CertificateAuthority",
             control_plane.cluster.name,
-            # {},
-            # parent=control_plane,
+            opts=ResourceOptions(parent=control_plane),
         )
 
         self.private_key = tls.PrivateKey(
             control_plane.cluster.name,
-            # parent=self,
+            opts=ResourceOptions(parent=self),
             algorithm="RSA",
             rsa_bits=2048,
         )
@@ -36,7 +33,7 @@ class CertificateAuthority(ComponentResource):
             subject={
                 "common_name": control_plane.cluster.name,
             },
-            # parent=self,
+            opts=ResourceOptions(parent=self),
         )
 
 
@@ -50,15 +47,14 @@ class KeyAndCert(ComponentResource):
         super().__init__(
             f"{PREFIX}:kubernetes:KeyAndCert",
             name,
-            # {},
-            # parent=certificate_authority,
+            opts=ResourceOptions(parent=certificate_authority),
         )
 
         self.private_key = tls.PrivateKey(
             name,
             algorithm="RSA",
             rsa_bits=2048,
-            # parent=self,
+            opts=ResourceOptions(parent=self),
         )
 
         self.certificate_signing_request = tls.CertRequest(
@@ -67,7 +63,7 @@ class KeyAndCert(ComponentResource):
             subject={
                 "common_name": name,
             },
-            # parent=self,
+            opts=ResourceOptions(parent=self),
         )
 
         self.certificate = tls.LocallySignedCert(
@@ -84,5 +80,5 @@ class KeyAndCert(ComponentResource):
                 "server_auth",
                 "client_auth",
             ],
-            # parent=self,
+            opts=ResourceOptions(parent=self),
         )

@@ -24,7 +24,7 @@ class Config:
 
 class Cluster(ComponentResource):
     def __init__(self, name: str, config: Config):
-        super().__init__("kubernetes:Cluster", name)
+        super().__init__(f"{PREFIX}:kubernetes:Cluster", name, config.__dict__)
 
         self.name = name
         self.config = config
