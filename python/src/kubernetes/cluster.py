@@ -37,15 +37,6 @@ class Cluster(ComponentResource):
             opts=ResourceOptions(parent=self),
         ).address
 
-        self.ingress_ip = equinix.metal.ReservedIpBlock(
-            f"{name}-ingress",
-            project_id=config.project,
-            metro=config.metro,
-            type=equinix.metal.IpBlockType.PUBLIC_I_PV4,
-            quantity=1,
-            opts=ResourceOptions(parent=self),
-        ).address
-
         self.control_plane = None
         self.worker_pools: Dict[str, WorkerPool] = {}
 
