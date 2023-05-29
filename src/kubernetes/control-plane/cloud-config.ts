@@ -120,13 +120,6 @@ export const cloudConfig = cloudinit.getConfig({
     {
       contentType: "text/x-shellscript",
       content: fs.readFileSync(
-        "../cloud-init/scripts/ingress.sh",
-        "utf8"
-      ),
-    },
-    {
-      contentType: "text/x-shellscript",
-      content: fs.readFileSync(
         "../cloud-init/scripts/post-install.sh",
         "utf8"
       ),

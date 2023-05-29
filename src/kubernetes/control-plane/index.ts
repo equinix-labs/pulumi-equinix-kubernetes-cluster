@@ -92,7 +92,6 @@ export class ControlPlane extends ComponentResource {
           .all([
             this.joinToken.token,
             this.cluster.controlPlaneIp,
-            this.cluster.ingressIp,
             this.certificateAuthority.privateKey.privateKeyPem,
             this.certificateAuthority.certificate.certPem,
             this.serviceAccountCertificate.privateKey.privateKeyPem,
@@ -106,7 +105,6 @@ export class ControlPlane extends ComponentResource {
             ([
               joinToken,
               controlPlaneIp,
-              ingressIp,
               certificateAuthorityKey,
               certificateAuthorityCert,
               serviceAccountKey,
@@ -121,7 +119,6 @@ export class ControlPlane extends ComponentResource {
                 controlPlaneRole: i == 1 ? "primary" : "replica",
                 joinToken,
                 controlPlaneIp,
-                ingressIp,
                 certificateAuthorityKey,
                 certificateAuthorityCert,
                 serviceAccountKey,

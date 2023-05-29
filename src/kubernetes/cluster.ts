@@ -15,7 +15,6 @@ export class Cluster extends ComponentResource {
   readonly name: string;
   readonly config: Config;
   readonly controlPlaneIp: Output<string>;
-  readonly ingressIp: Output<string>;
   public controlPlane?: ControlPlane;
   private workerPools: { [name: string]: WorkerPool } = {};
 
@@ -27,19 +26,6 @@ export class Cluster extends ComponentResource {
 
     this.controlPlaneIp = new equinix.metal.ReservedIpBlock(
       `${name}-control-plane`,
-      {
-        projectId: config.project,
-        metro: config.metro,
-        type: "public_ipv4",
-        quantity: 1,
-      },
-      {
-        parent: this,
-      }
-    ).address;
-
-    this.ingressIp = new equinix.metal.ReservedIpBlock(
-      `${name}-ingress`,
       {
         projectId: config.project,
         metro: config.metro,
