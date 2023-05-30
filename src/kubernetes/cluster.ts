@@ -1,5 +1,5 @@
 import { ComponentResource, Output } from "@pulumi/pulumi";
-import * as metal from "@pulumi/equinix-metal";
+import * as equinix from "@equinix-labs/pulumi-equinix";
 
 import { PREFIX } from "./meta";
 import { WorkerPool, Config as WorkerPoolConfig } from "./worker-pool";
@@ -15,7 +15,6 @@ export class Cluster extends ComponentResource {
   readonly name: string;
   readonly config: Config;
   readonly controlPlaneIp: Output<string>;
-  readonly ingressIp: Output<string>;
   public controlPlane?: ControlPlane;
   private workerPools: { [name: string]: WorkerPool } = {};
 
@@ -25,21 +24,8 @@ export class Cluster extends ComponentResource {
     this.name = name;
     this.config = config;
 
-    this.controlPlaneIp = new metal.ReservedIpBlock(
+    this.controlPlaneIp = new equinix.metal.ReservedIpBlock(
       `${name}-control-plane`,
-      {
-        projectId: config.project,
-        metro: config.metro,
-        type: "public_ipv4",
-        quantity: 1,
-      },
-      {
-        parent: this,
-      }
-    ).address;
-
-    this.ingressIp = new metal.ReservedIpBlock(
-      `${name}-ingress`,
       {
         projectId: config.project,
         metro: config.metro,

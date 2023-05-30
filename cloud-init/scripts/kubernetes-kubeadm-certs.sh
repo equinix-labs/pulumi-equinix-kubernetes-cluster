@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
 set -e
 
-CERTIFICATE_AUTHORITY_KEY=$(jq -r ".certificateAuthorityKey" /tmp/customdata.json)
-CERTIFICATE_AUTHORITY_CERT=$(jq -r ".certificateAuthorityCert" /tmp/customdata.json)
-SERVICE_ACCOUNT_KEY=$(jq -r ".serviceAccountKey" /tmp/customdata.json)
-SERVICE_ACCOUNT_PUBLIC_KEY=$(jq -r ".serviceAccountPublicKey" /tmp/customdata.json)
-SERVICE_ACCOUNT_CERT=$(jq -r ".serviceAccountCert" /tmp/customdata.json)
-FRONT_PROXY_KEY=$(jq -r ".frontProxyKey" /tmp/customdata.json)
-FRONT_PROXY_CERT=$(jq -r ".frontProxyCert" /tmp/customdata.json)
-ETCD_KEY=$(jq -r ".etcdKey" /tmp/customdata.json)
-ETCD_CERT=$(jq -r ".etcdCert" /tmp/customdata.json)
+echo "Manage kubernetes PKI certificates..."
+
+CERTIFICATE_AUTHORITY_KEY=$(jq -r ".certificateAuthorityKey" /run/customdata.json)
+CERTIFICATE_AUTHORITY_CERT=$(jq -r ".certificateAuthorityCert" /run/customdata.json)
+SERVICE_ACCOUNT_KEY=$(jq -r ".serviceAccountKey" /run/customdata.json)
+SERVICE_ACCOUNT_PUBLIC_KEY=$(jq -r ".serviceAccountPublicKey" /run/customdata.json)
+SERVICE_ACCOUNT_CERT=$(jq -r ".serviceAccountCert" /run/customdata.json)
+FRONT_PROXY_KEY=$(jq -r ".frontProxyKey" /run/customdata.json)
+FRONT_PROXY_CERT=$(jq -r ".frontProxyCert" /run/customdata.json)
+ETCD_KEY=$(jq -r ".etcdKey" /run/customdata.json)
+ETCD_CERT=$(jq -r ".etcdCert" /run/customdata.json)
 
 mkdir -p /etc/kubernetes/pki/etcd
 

@@ -1,2 +1,2 @@
-import * as metal from "@pulumi/equinix-metal";
+import * as equinix from "@equinix-labs/pulumi-equinix";
 export { Cluster } from "./cluster";

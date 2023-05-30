@@ -1,6 +1,6 @@
 import { ComponentResource } from "@pulumi/pulumi";
 import * as pulumi from "@pulumi/pulumi";
-import * as metal from "@pulumi/equinix-metal";
+import * as equinix from "@equinix-labs/pulumi-equinix";
 
 import { PREFIX } from "../meta";
 import { Cluster } from "../cluster";
@@ -9,13 +9,13 @@ import { JoinToken } from "./join-token";
 import { cloudConfig } from "./cloud-config";
 
 export interface Config {
-  plan: metal.Plan;
+  plan: equinix.metal.Plan;
   highAvailability: boolean;
 }
 
 interface ControlPlaneNode {
-  device: metal.Device;
-  bgpSession: metal.BgpSession;
+  device: equinix.metal.Device;
+  bgpSession: equinix.metal.BgpSession;
 }
 
 export class ControlPlane extends ComponentResource {
@@ -74,10 +74,10 @@ export class ControlPlane extends ComponentResource {
     return `${this.cluster.name}-${name}`;
   }
 
-  createDevice(i: number, dependsOn: metal.Device[] = []): ControlPlaneNode {
+  createDevice(i: number, dependsOn: equinix.metal.Device[] = []): ControlPlaneNode {
     const hostname = `${this.cluster.name}-control-plane-${i}`;
 
-    const device = new metal.Device(
+    const device = new equinix.metal.Device(
       hostname,
       {
         hostname,
@@ -86,13 +86,12 @@ export class ControlPlane extends ComponentResource {
         plan: this.config.plan,
 
         // Not configurable, yet.
-        billingCycle: metal.BillingCycle.Hourly,
-        operatingSystem: metal.OperatingSystem.Ubuntu2004,
+        billingCycle: equinix.metal.BillingCycle.Hourly,
+        operatingSystem: equinix.metal.OperatingSystem.Ubuntu2204,
         customData: pulumi
           .all([
             this.joinToken.token,
             this.cluster.controlPlaneIp,
-            this.cluster.ingressIp,
             this.certificateAuthority.privateKey.privateKeyPem,
             this.certificateAuthority.certificate.certPem,
             this.serviceAccountCertificate.privateKey.privateKeyPem,
@@ -106,7 +105,6 @@ export class ControlPlane extends ComponentResource {
             ([
               joinToken,
               controlPlaneIp,
-              ingressIp,
               certificateAuthorityKey,
               certificateAuthorityCert,
               serviceAccountKey,
@@ -118,9 +116,9 @@ export class ControlPlane extends ComponentResource {
             ]) =>
               JSON.stringify({
                 kubernetesVersion: this.cluster.config.kubernetesVersion,
+                controlPlaneRole: i == 1 ? "primary" : "replica",
                 joinToken,
                 controlPlaneIp,
-                ingressIp,
                 certificateAuthorityKey,
                 certificateAuthorityCert,
                 serviceAccountKey,
@@ -139,7 +137,7 @@ export class ControlPlane extends ComponentResource {
       }
     );
 
-    const bgpSession = new metal.BgpSession(
+    const bgpSession = new equinix.metal.BgpSession(
       hostname,
       {
         deviceId: device.id,

@@ -1,17 +1,16 @@
 import { all, ComponentResource, Output } from "@pulumi/pulumi";
 import * as cloudinit from "@pulumi/cloudinit";
-import * as metal from "@pulumi/equinix-metal";
+import * as equinix from "@equinix-labs/pulumi-equinix";
 import * as fs from "fs";
 
 import { Cluster } from "./cluster";
 import { PREFIX } from "./meta";
 
-type WorkerNode = metal.Device;
+type WorkerNode = equinix.metal.Device;
 
 export interface Config {
-  plan: metal.Plan;
+  plan: equinix.metal.Plan;
   replicas: number;
-  kubernetesVersion: string;
 }
 
 export class WorkerPool extends ComponentResource {
@@ -38,19 +37,19 @@ export class WorkerPool extends ComponentResource {
     config: Config,
     num: number
   ): WorkerNode {
-    const device = new metal.Device(
+    const device = new equinix.metal.Device(
       `${cluster.name}-${name}-${num}`,
       {
         hostname: `${cluster.name}-${name}-${num}`,
         metro: cluster.config.metro,
-        billingCycle: metal.BillingCycle.Hourly,
+        billingCycle: equinix.metal.BillingCycle.Hourly,
         plan: config.plan,
-        operatingSystem: metal.OperatingSystem.Ubuntu2004,
+        operatingSystem: equinix.metal.OperatingSystem.Ubuntu2204,
         projectId: cluster.config.project,
         customData: all([cluster.joinToken(), cluster.controlPlaneIp]).apply(
-          ([joinToken, controlPlaneIp, teleportSecret]) =>
+          ([joinToken, controlPlaneIp]) =>
             JSON.stringify({
-              kubernetesVersion: config.kubernetesVersion,
+              kubernetesVersion: cluster.config.kubernetesVersion,
               joinToken,
               controlPlaneIp,
             })
@@ -76,6 +75,13 @@ const cloudConfig = cloudinit.getConfig({
     {
       contentType: "text/x-shellscript",
       content: fs.readFileSync(
+        "../cloud-init/scripts/pre-install.sh",
+        "utf8"
+      ),
+    },
+    {
+      contentType: "text/x-shellscript",
+      content: fs.readFileSync(
         "../cloud-init/scripts/download-metadata.sh",
         "utf8"
       ),
@@ -83,13 +89,9 @@ const cloudConfig = cloudinit.getConfig({
     {
       contentType: "text/x-shellscript",
       content: fs.readFileSync(
-        "../cloud-init/scripts/base-packages.sh",
+        "../cloud-init/scripts/containerd-prerequisites.sh",
         "utf8"
       ),
-    },
-    {
-      contentType: "text/x-shellscript",
-      content: fs.readFileSync("../cloud-init/scripts/containerd.sh", "utf8"),
     },
     {
       contentType: "text/x-shellscript",
@@ -101,7 +103,21 @@ const cloudConfig = cloudinit.getConfig({
     {
       contentType: "text/x-shellscript",
       content: fs.readFileSync(
-        "../cloud-init/scripts/kubernetes-packages.sh",
+        "../cloud-init/scripts/kubelet-config.sh",
+        "utf8"
+      ),
+    },
+    {
+      contentType: "text/x-shellscript",
+      content: fs.readFileSync(
+        "../cloud-init/scripts/kubernetes-kubeadm-packages.sh",
+        "utf8"
+      ),
+    },
+    {
+      contentType: "text/x-shellscript",
+      content: fs.readFileSync(
+        "../cloud-init/scripts/kubernetes-kubeadm-worker-config.sh",
         "utf8"
       ),
     },
@@ -116,6 +132,13 @@ const cloudConfig = cloudinit.getConfig({
       contentType: "text/x-shellscript",
       content: fs.readFileSync(
         "../cloud-init/scripts/net-deny-metadata.sh",
+        "utf8"
+      ),
+    },
+    {
+      contentType: "text/x-shellscript",
+      content: fs.readFileSync(
+        "../cloud-init/scripts/post-install.sh",
         "utf8"
       ),
     },
