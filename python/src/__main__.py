@@ -27,7 +27,7 @@ cluster = Cluster(
     "example",
     ClusterConfig(
         kubernetes_version=config.get("kubernetesVersion") or "1.24.7",
-        metro=config.get("equinix.metalMetro") or "SV",
+        metro=config.get("metalMetro") or "SV",
         project=project.id,
     ),
 )

@@ -1,4 +1,4 @@
-name: klustered
+name: metal-k8s-cluster
 runtime: nodejs
-description: Klustered
+description: A Node.js Pulumi template for Kubernetes on Equinix Metal with kubeadm and cloud-init
 main: src/index.ts
