@@ -20,30 +20,30 @@ Before you begin, ensure you have the following installed:
 
 ## Getting Started
 
-Choose the template based on your preferred programming language:
+Choose the template based on your preferred programming language to create a new Pulumi projec:
 
-- [Python Template](./python)
-- [Node.js Template](./nodejs)
-
-Inside each template directory, you will find the necessary files to deploy a Kubernetes cluster on Equinix Metal.
+- Python Template:
+   - `pulumi new https://github.com/equinix-labs/pulumi-equinix-kubernetes-cluster/tree/main/python`
+- Node.js Template:
+   - `pulumi new https://github.com/equinix-labs/pulumi-equinix-kubernetes-cluster/tree/main/nodejs`
 
 ## Usage
 
 ### Python Template
 
-1. Change to the `python` directory: `cd python`
-2. Initialize a new Pulumi stack: `pulumi stack init`
+1. Activate the virtual environment: `source venv/bin/activate`
+2. Install dependencies: `pip install -r requirements.txt`
 3. Set the required configuration variables. See [configuration variables](#configuration-variables) below.
-4. Deploy the stack: `pulumi up`
-5. Follow the instructions printed in the console to complete the deployment.
+4. Set metal credentials: `export METAL_AUTH_TOKEN=<YOUR_METAL_API_TOKEN>`
+5. Deploy the stack: `pulumi up`
+6. Follow the instructions printed in the console to complete the deployment.
 
 ### Node.js Template
 
-1. Change to the `nodejs` directory: `cd nodejs`
-2. Initialize a new Pulumi stack: `pulumi stack init`
-3. Set the required configuration variables. See [configuration variables](#configuration-variables) below.
-4. Deploy the stack: `pulumi up`
-5. Follow the instructions printed in the console to complete the deployment.
+1. Set the required configuration variables. See [configuration variables](#configuration-variables) below.
+2. Set metal credentials: `export METAL_AUTH_TOKEN=<YOUR_METAL_API_TOKEN>`
+3. Deploy the stack: `pulumi up`
+4. Follow the instructions printed in the console to complete the deployment.
 
 ## Configuration Variables
 
@@ -51,14 +51,14 @@ The following table lists the configuration variables for both templates:
 
 | Variable | Description | Default Value |
 |----------|-------------|---------------|
-| metal-k8s-cluster:metalOrg | The Equinix Metal organization name. This variable is required. | N/A           |
-| metal-k8s-cluster:metalMetro   | The deployment metro code. This variable is optional and defaults to 'SV'. See [metro codes](https://deploy.equinix.com/developers/docs/metal/locations/metros/#metros-quick-reference) | SV            |
-| metal-k8s-cluster:kubernetesVersion  | The Kubernetes version. This variable is optional and defaults to '1.24.7'. | 1.24.7         |
+| metalOrg | The Equinix Metal organization name. This variable is required. | N/A           |
+| metalMetro   | The deployment metro code. This variable is optional and defaults to 'SV'. See [metro codes](https://deploy.equinix.com/developers/docs/metal/locations/metros/#metros-quick-reference) | SV            |
+| kubernetesVersion  | The Kubernetes version. This variable is optional and defaults to '1.24.7'. | 1.24.7         |
 
 To add them you can use `pulumi config set` command:
 
 ```sh
-pulumi config set metal-k8s-cluster:metalOrg <METAL_ORG_ID>
+pulumi config set metalOrg <METAL_ORG_ID>
 ```
 
 ## Customization
