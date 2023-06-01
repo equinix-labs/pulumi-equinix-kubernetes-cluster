@@ -8,103 +8,103 @@ cloud_config = cloudinit.get_config(
         cloudinit.GetConfigPartArgs(
             content_type="text/x-shellscript",
             content=helpers.get_file_content(
-                f"{helpers.get_project_root()}/../cloud-init/scripts/pre-install.sh"
+                f"{helpers.get_project_root()}/cloud-init/scripts/pre-install.sh"
             ),
         ),
         cloudinit.GetConfigPartArgs(
             content_type="text/x-shellscript",
             content=helpers.get_file_content(
-                f"{helpers.get_project_root()}/../cloud-init/scripts/wait-for-bgp-enabled.sh"
+                f"{helpers.get_project_root()}/cloud-init/scripts/wait-for-bgp-enabled.sh"
             ),
         ),
         cloudinit.GetConfigPartArgs(
             content_type="text/x-shellscript",
             content=helpers.get_file_content(
-                f"{helpers.get_project_root()}/../cloud-init/scripts/download-metadata.sh"
+                f"{helpers.get_project_root()}/cloud-init/scripts/download-metadata.sh"
             ),
         ),
         cloudinit.GetConfigPartArgs(
             content_type="text/x-shellscript",
             content=helpers.get_file_content(
-                f"{helpers.get_project_root()}/../cloud-init/scripts/network-config-cp.sh"
+                f"{helpers.get_project_root()}/cloud-init/scripts/network-config-cp.sh"
             ),
         ),
         cloudinit.GetConfigPartArgs(
             content_type="text/x-shellscript",
             content=helpers.get_file_content(
-                f"{helpers.get_project_root()}/../cloud-init/scripts/containerd-prerequisites.sh"
+                f"{helpers.get_project_root()}/cloud-init/scripts/containerd-prerequisites.sh"
             ),
         ),
         cloudinit.GetConfigPartArgs(
             content_type="text/x-shellscript",
             content=helpers.get_file_content(
-                f"{helpers.get_project_root()}/../cloud-init/scripts/kubernetes-prerequisites.sh"
+                f"{helpers.get_project_root()}/cloud-init/scripts/kubernetes-prerequisites.sh"
             ),
         ),
         cloudinit.GetConfigPartArgs(
             content_type="text/x-shellscript",
             content=helpers.get_file_content(
-                f"{helpers.get_project_root()}/../cloud-init/scripts/crictl-config.sh"
+                f"{helpers.get_project_root()}/cloud-init/scripts/crictl-config.sh"
             ),
         ),
         cloudinit.GetConfigPartArgs(
             content_type="text/x-shellscript",
             content=helpers.get_file_content(
-                f"{helpers.get_project_root()}/../cloud-init/scripts/kubelet-config.sh"
+                f"{helpers.get_project_root()}/cloud-init/scripts/kubelet-config.sh"
             ),
         ),
         cloudinit.GetConfigPartArgs(
             content_type="text/x-shellscript",
             content=helpers.get_file_content(
-                f"{helpers.get_project_root()}/../cloud-init/scripts/kubernetes-kubeadm-certs.sh"
+                f"{helpers.get_project_root()}/cloud-init/scripts/kubernetes-kubeadm-certs.sh"
             ),
         ),
         cloudinit.GetConfigPartArgs(
             content_type="text/x-shellscript",
             content=helpers.get_file_content(
-                f"{helpers.get_project_root()}/../cloud-init/scripts/kubernetes-kubeadm-packages.sh"
+                f"{helpers.get_project_root()}/cloud-init/scripts/kubernetes-kubeadm-packages.sh"
             ),
         ),
         cloudinit.GetConfigPartArgs(
             content_type="text/x-shellscript",
             content=helpers.get_file_content(
-                f"{helpers.get_project_root()}/../cloud-init/scripts/kubernetes-kubeadm-cp-config.sh"
+                f"{helpers.get_project_root()}/cloud-init/scripts/kubernetes-kubeadm-cp-config.sh"
             ),
         ),
         cloudinit.GetConfigPartArgs(
             content_type="text/x-shellscript",
             content=helpers.get_file_content(
-                f"{helpers.get_project_root()}/../cloud-init/scripts/kube-vip-cp-ha-bgp.sh"
+                f"{helpers.get_project_root()}/cloud-init/scripts/kube-vip-cp-ha-bgp.sh"
             ),
         ),
         cloudinit.GetConfigPartArgs(
             content_type="text/x-shellscript",
             content=helpers.get_file_content(
-                f"{helpers.get_project_root()}/../cloud-init/scripts/kubernetes-kubeadm-cp-join.sh"
+                f"{helpers.get_project_root()}/cloud-init/scripts/kubernetes-kubeadm-cp-join.sh"
             ),
         ),
         cloudinit.GetConfigPartArgs(
             content_type="text/x-shellscript",
             content=helpers.get_file_content(
-                f"{helpers.get_project_root()}/../cloud-init/scripts/helm.sh"
+                f"{helpers.get_project_root()}/cloud-init/scripts/helm.sh"
             ),
         ),
         cloudinit.GetConfigPartArgs(
             content_type="text/x-shellscript",
             content=helpers.get_file_content(
-                f"{helpers.get_project_root()}/../cloud-init/scripts/cni-cilium.sh"
+                f"{helpers.get_project_root()}/cloud-init/scripts/cni-cilium.sh"
             ),
         ),
         cloudinit.GetConfigPartArgs(
             content_type="text/x-shellscript",
             content=helpers.get_file_content(
-                f"{helpers.get_project_root()}/../cloud-init/scripts/net-deny-metadata.sh"
+                f"{helpers.get_project_root()}/cloud-init/scripts/net-deny-metadata.sh"
             ),
         ),
         cloudinit.GetConfigPartArgs(
             content_type="text/x-shellscript",
             content=helpers.get_file_content(
-                f"{helpers.get_project_root()}/../cloud-init/scripts/post-install.sh"
+                f"{helpers.get_project_root()}/cloud-init/scripts/post-install.sh"
             ),
         ),
     ],

@@ -2,6 +2,10 @@ from pathlib import Path
 
 
 def get_project_root():
+    """
+    get_project_root() return `python` folder path
+    and treat it as the root
+    """
     return str(Path(__file__).parent.parent)
 
 
