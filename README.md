@@ -20,7 +20,7 @@ Before you begin, ensure you have the following installed:
 
 ## Getting Started
 
-Choose the template based on your preferred programming language to create a new Pulumi projec:
+To create a new Pulumi project, you should start by selecting the template that aligns with your preferred programming language:
 
 - Python Template:
    - `pulumi new https://github.com/equinix-labs/pulumi-equinix-kubernetes-cluster/tree/main/python`
