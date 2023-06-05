@@ -1,8 +1,10 @@
 .idea/
 .DS_Store
 .vscode
-/bin/
-/node_modules/
+**/bin/
+**/node_modules/
 Pulumi.*.yaml
 .dccache
 package-lock.json
+**/.venv/
+**/__pycache__/

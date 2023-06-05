@@ -1,4 +1,0 @@
-name: klustered
-runtime: nodejs
-description: Klustered
-main: src/index.ts
