@@ -2,13 +2,14 @@ from typing import List
 
 import pulumi_equinix as equinix
 from kubernetes.meta import PREFIX
-from pulumi import ComponentResource, Output, ResourceOptions
+from pulumi import input_type, ComponentResource, Input, Output, ResourceOptions
 
 from .certificates import CertificateAuthority, KeyAndCert
 from .cloud_config import cloud_config
 from .join_token import JoinToken
 
 
+@input_type
 class Config:
     def __init__(self, plan: equinix.metal.Plan, high_availability: bool):
         self.plan = plan
@@ -24,7 +25,7 @@ class ControlPlaneNode:
 
 
 class ControlPlane(ComponentResource):
-    def __init__(self, cluster, config: Config, opts: ResourceOptions = None):
+    def __init__(self, cluster, config: Input['Config'], opts: ResourceOptions = None):
         super().__init__(
             f"{PREFIX}:kubernetes:ControlPlane",
             cluster.name,
@@ -37,34 +38,34 @@ class ControlPlane(ComponentResource):
         self.certificate_authority = CertificateAuthority(self)
 
         self.service_account_certificate = KeyAndCert(
-            self.create_name("service-accounts"), False, self.certificate_authority
+            self.__create_name("service-accounts"), False, self.certificate_authority
         )
 
         self.front_proxy_certificate = KeyAndCert(
-            self.create_name("front-proxy"), True, self.certificate_authority
+            self.__create_name("front-proxy"), True, self.certificate_authority
         )
 
         self.etcd_certificate = KeyAndCert(
-            self.create_name("etcd"), True, self.certificate_authority
+            self.__create_name("etcd"), True, self.certificate_authority
         )
 
         self.join_token = JoinToken(self)
 
         self.control_plane_devices = []
-        control_plane1 = self.create_device(1)
+        control_plane1 = self.__create_device(1)
         self.control_plane_devices.append(control_plane1)
 
         if config.high_availability:
-            control_plane2 = self.create_device(2, [control_plane1])
+            control_plane2 = self.__create_device(2, [control_plane1])
             self.control_plane_devices.append(control_plane2)
 
-            control_plane3 = self.create_device(3, [control_plane2])
+            control_plane3 = self.__create_device(3, [control_plane2])
             self.control_plane_devices.append(control_plane3)
 
-    def create_name(self, name: str) -> str:
+    def __create_name(self, name: str) -> str:
         return f"{self.cluster.name}-{name}"
 
-    def create_device(
+    def __create_device(
         self, i: int, depends_on: List[equinix.metal.Device] = []
     ) -> ControlPlaneNode:
         hostname = f"{self.cluster.name}-control-plane-{i}"
@@ -104,7 +105,7 @@ class ControlPlane(ComponentResource):
                         "etcdKey": values[8],
                         "etcdCert": values[9],
                     },
-                    separators=(',', ':')
+                    separators=(",", ":"),
                 )
             ),
             user_data=cloud_config.rendered,

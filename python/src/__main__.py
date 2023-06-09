@@ -29,16 +29,16 @@ cluster = Cluster(
         kubernetes_version=config.get("kubernetesVersion") or "1.24.7",
         metro=config.get("metalMetro") or "SV",
         project=project.id,
+        control_plane_config=ControlPlaneConfig(
+            high_availability=False,
+            plan=equinix.metal.Plan.C3_SMALL_X86,
+        ),
+        worker_pool_configs=[
+            WorkerPoolConfig(
+                name_suffix="worker",
+                plan=equinix.metal.Plan.C3_SMALL_X86,
+                replicas=2,
+            )
+        ],
     ),
-)
-
-cluster.create_control_plane(
-    ControlPlaneConfig(
-        high_availability=False,
-        plan=equinix.metal.Plan.C3_SMALL_X86,
-    )
-)
-
-cluster.create_worker_pool(
-    "worker", WorkerPoolConfig(plan=equinix.metal.Plan.C3_SMALL_X86, replicas=2)
 )
