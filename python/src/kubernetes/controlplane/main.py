@@ -1,8 +1,10 @@
 from typing import List
 
+import pulumi_command as command
 import pulumi_equinix as equinix
 from kubernetes.meta import PREFIX
-from pulumi import input_type, ComponentResource, Input, Output, ResourceOptions
+from pulumi import (ComponentResource, Input, Output, ResourceOptions,
+                    input_type)
 
 from .certificates import CertificateAuthority, KeyAndCert
 from .cloud_config import cloud_config
@@ -25,7 +27,7 @@ class ControlPlaneNode:
 
 
 class ControlPlane(ComponentResource):
-    def __init__(self, cluster, config: Input['Config'], opts: ResourceOptions = None):
+    def __init__(self, cluster, config: Input["Config"], opts: ResourceOptions = None):
         super().__init__(
             f"{PREFIX}:kubernetes:ControlPlane",
             cluster.name,
@@ -55,11 +57,35 @@ class ControlPlane(ComponentResource):
         control_plane1 = self.__create_device(1)
         self.control_plane_devices.append(control_plane1)
 
+        conn = command.remote.ConnectionArgs(
+            host=control_plane1.device.access_public_ipv4,
+            private_key=cluster.config.private_ssh_key,
+            user="root",
+        )
+
+        wait_cloudinit = command.remote.Command(
+            "wait-cloud-init",
+            connection=conn,
+            create="cloud-init status --wait",
+            opts=ResourceOptions(parent=self, depends_on=[control_plane1.device]),
+        )
+
+        self.kubeconfig = command.remote.Command(
+            "kubeconfig",
+            connection=conn,
+            create="cat /root/.kube/config",
+            opts=ResourceOptions(
+                parent=self,
+                depends_on=[wait_cloudinit],
+                additional_secret_outputs=["stdout"],
+            ),
+        ).stdout
+
         if config.high_availability:
-            control_plane2 = self.__create_device(2, [control_plane1])
+            control_plane2 = self.__create_device(2, [control_plane1.device])
             self.control_plane_devices.append(control_plane2)
 
-            control_plane3 = self.__create_device(3, [control_plane2])
+            control_plane3 = self.__create_device(3, [control_plane2.device])
             self.control_plane_devices.append(control_plane3)
 
     def __create_name(self, name: str) -> str:

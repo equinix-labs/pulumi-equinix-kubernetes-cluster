@@ -1,7 +1,7 @@
 import helpers
 import pulumi_cloudinit as cloudinit
 import pulumi_equinix as equinix
-from pulumi import input_type, ComponentResource, Output, ResourceOptions
+from pulumi import ComponentResource, Output, ResourceOptions, input_type
 
 from .meta import PREFIX
 
@@ -9,6 +9,7 @@ from .meta import PREFIX
 class WorkerNode:
     def __init__(self, device):
         self.device = device
+
 
 @input_type
 class Config:
