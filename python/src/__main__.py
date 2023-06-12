@@ -4,7 +4,7 @@ import sys
 import pulumi
 import pulumi_equinix as equinix
 import pulumi_tls as tls
-from pulumi import Output, ResourceOptions
+from pulumi import Input, Output, ResourceOptions
 
 sys.path.insert(0, os.getcwd())
 from kubernetes.cluster import Cluster
@@ -25,7 +25,9 @@ def create_project() -> equinix.metal.Project:
     )
 
 
-def create_project_key(private_key_output_path: str, project_id: str) -> Output[str]:
+def create_project_key(
+    private_key_output_path: str, project_id: Input[str]
+) -> Output[str]:
     private_key = tls.PrivateKey(
         "example",
         algorithm="ED25519",
@@ -55,7 +57,7 @@ def create_project_key(private_key_output_path: str, project_id: str) -> Output[
 config = pulumi.Config()
 kubernetes_version = config.get("kubernetesVersion") or "1.24.7"
 metal_metro = config.get("metro") or "SV"
-project_id = config.get("projectId") or create_project().id
+project_id = config.get("project") or create_project().id
 ssh_private_key_path = config.get("sshPrivateKeyPath")
 private_ssh_key = (
     create_project_key("pulumi-k8s-metal-ssh-key", project_id)
@@ -63,6 +65,7 @@ private_ssh_key = (
     else Output.secret((lambda path: open(path).read())(ssh_private_key_path))
 )
 
+# Create new Cluster
 cluster = Cluster(
     "example",
     ClusterConfig(

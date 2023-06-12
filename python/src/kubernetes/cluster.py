@@ -12,22 +12,21 @@ import pulumi
 from kubernetes.controlplane.main import Config as ControlPlaneConfig
 from kubernetes.controlplane.main import ControlPlane
 from kubernetes.meta import PREFIX
-from pulumi import ComponentResource, Output, ResourceOptions
+from pulumi import ComponentResource, Input, ResourceOptions
 
 from .worker_pool import Config as WorkerPoolConfig
 from .worker_pool import WorkerPool
 
 
-@pulumi.input_type
 class Config:
     def __init__(
         self,
-        project: pulumi.Output[str],
+        project: Input[str],
         metro: str,
         kubernetes_version: str,
-        private_ssh_key: pulumi.Output[str],
-        control_plane_config: pulumi.Input["ControlPlaneConfig"],
-        worker_pool_configs: Optional[list[pulumi.Input["WorkerPoolConfig"]]] = [],
+        private_ssh_key: Input[str],
+        control_plane_config: Input["ControlPlaneConfig"],
+        worker_pool_configs: Optional[list[Input["WorkerPoolConfig"]]] = [],
     ):
         self.project = project
         self.metro = metro

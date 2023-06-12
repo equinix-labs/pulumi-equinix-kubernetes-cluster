@@ -3,8 +3,7 @@ from typing import List
 import pulumi_command as command
 import pulumi_equinix as equinix
 from kubernetes.meta import PREFIX
-from pulumi import (ComponentResource, Input, Output, ResourceOptions,
-                    input_type)
+from pulumi import ComponentResource, Input, Output, ResourceOptions, input_type
 
 from .certificates import CertificateAuthority, KeyAndCert
 from .cloud_config import cloud_config
@@ -31,6 +30,7 @@ class ControlPlane(ComponentResource):
         super().__init__(
             f"{PREFIX}:kubernetes:ControlPlane",
             cluster.name,
+            config.__dict__,
             opts=ResourceOptions(parent=cluster),
         )
 
