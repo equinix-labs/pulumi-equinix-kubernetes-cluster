@@ -1,6 +1,8 @@
-import { ComponentResource } from "@pulumi/pulumi";
+import { ComponentResource, Output } from "@pulumi/pulumi";
+
 import * as pulumi from "@pulumi/pulumi";
 import * as equinix from "@equinix-labs/pulumi-equinix";
+import { remote, types } from "@pulumi/command";
 
 import { PREFIX } from "../meta";
 import { Cluster } from "../cluster";
@@ -27,6 +29,7 @@ export class ControlPlane extends ComponentResource {
   readonly etcdCertificate: KeyAndCert;
   readonly joinToken: JoinToken;
   readonly controlPlaneDevices: ControlPlaneNode[] = [];
+  readonly kubeconfig: Output<string>;
 
   constructor(cluster: Cluster, config: Config) {
     super(`${PREFIX}:kubernetes:ControlPlane`, cluster.name, config, {
@@ -61,6 +64,37 @@ export class ControlPlane extends ComponentResource {
     const controlPlane1 = this.createDevice(1);
     this.controlPlaneDevices.push(controlPlane1);
 
+    const conn: types.input.remote.ConnectionArgs = {
+      host: controlPlane1.device.accessPublicIpv4,
+      privateKey: cluster.config.privateSshKey,
+      user: "root",
+    };
+
+    const waitCloudInit = new remote.Command(
+      "wait-cloud-init",
+      {
+          connection: conn,
+          create: "cloud-init status --wait",
+      },
+      {
+          parent: this,
+          dependsOn: [controlPlane1.device],
+      }
+    );
+
+    this.kubeconfig = new remote.Command(
+      "kubeconfig",
+      {
+          connection: conn,
+          create: "cat /root/.kube/config",
+      },
+      {
+          parent: this,
+          dependsOn: [waitCloudInit],
+          additionalSecretOutputs: ["stdout"],
+      }
+    ).stdout;
+
     if (config.highAvailability) {
       const controlPlane2 = this.createDevice(2, [controlPlane1.device]);
       this.controlPlaneDevices.push(controlPlane2);
@@ -70,11 +104,11 @@ export class ControlPlane extends ComponentResource {
     }
   }
 
-  createName(name: string) {
+  private createName(name: string) {
     return `${this.cluster.name}-${name}`;
   }
 
-  createDevice(i: number, dependsOn: equinix.metal.Device[] = []): ControlPlaneNode {
+  private createDevice(i: number, dependsOn: equinix.metal.Device[] = []): ControlPlaneNode {
     const hostname = `${this.cluster.name}-control-plane-${i}`;
 
     const device = new equinix.metal.Device(
