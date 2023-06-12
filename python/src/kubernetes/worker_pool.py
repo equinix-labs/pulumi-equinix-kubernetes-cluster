@@ -1,7 +1,7 @@
 import helpers
 import pulumi_cloudinit as cloudinit
 import pulumi_equinix as equinix
-from pulumi import ComponentResource, Output, ResourceOptions
+from pulumi import ComponentResource, Output, ResourceOptions, input_type
 
 from .meta import PREFIX
 
@@ -11,17 +11,19 @@ class WorkerNode:
         self.device = device
 
 
+@input_type
 class Config:
-    def __init__(self, plan, replicas):
+    def __init__(self, name_suffix, plan, replicas):
+        self.name_suffix = name_suffix
         self.plan = plan
         self.replicas = replicas
 
 
 class WorkerPool(ComponentResource):
-    def __init__(self, cluster, name: str, config: Config):
+    def __init__(self, cluster, config: Config):
         super().__init__(
             f"{PREFIX}:kubernetes:WorkerPool",
-            f"{cluster.name}-{name}",
+            f"{cluster.name}-{config.name_suffix}",
             config.__dict__,
             ResourceOptions(parent=cluster),
         )
@@ -29,9 +31,9 @@ class WorkerPool(ComponentResource):
         self.cluster = cluster
 
         for i in range(1, config.replicas + 1):
-            self.create_worker_pool_node(name, cluster, config, i)
+            self.__create_worker_pool_node(config.name_suffix, cluster, config, i)
 
-    def create_worker_pool_node(self, name: str, cluster, config: Config, num: int):
+    def __create_worker_pool_node(self, name: str, cluster, config: Config, num: int):
         device = equinix.metal.Device(
             f"{cluster.name}-{name}-{num}",
             hostname=f"{cluster.name}-{name}-{num}",
@@ -40,16 +42,14 @@ class WorkerPool(ComponentResource):
             plan=config.plan,
             operating_system=equinix.metal.OperatingSystem.UBUNTU2204,
             project_id=cluster.config.project,
-            custom_data=Output.all(
-                cluster.join_token(), cluster.control_plane_ip
-            ).apply(
+            custom_data=Output.all(cluster.join_token, cluster.control_plane_ip).apply(
                 lambda values: Output.json_dumps(
                     {
                         "kubernetesVersion": cluster.config.kubernetes_version,
                         "joinToken": values[0],
                         "controlPlaneIp": values[1],
                     },
-                    separators=(',', ':')
+                    separators=(",", ":"),
                 )
             ),
             user_data=cloud_config.rendered,

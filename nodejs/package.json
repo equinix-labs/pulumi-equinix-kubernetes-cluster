@@ -1,13 +1,14 @@
 {
   "name": "kubernetes-cloud-init",
   "devDependencies": {
-    "@types/node": "^10.0.0"
+    "@types/node": "^20.3.0"
   },
   "dependencies": {
-    "@pulumi/pulumi": "^3.0.0",
-    "@pulumi/cloudinit": "^1.1.0",
     "@equinix-labs/pulumi-equinix": "^0.2.1",
+    "@pulumi/cloudinit": "^1.1.0",
+    "@pulumi/pulumi": "^3.0.0",
     "@pulumi/random": "^4.2.0",
-    "@pulumi/tls": "^4.0.0"
+    "@pulumi/tls": "^4.0.0",
+    "@pulumi/command": "^0.7.2"
   }
 }

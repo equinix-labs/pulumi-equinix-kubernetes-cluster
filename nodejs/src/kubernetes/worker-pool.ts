@@ -9,6 +9,7 @@ import { PREFIX } from "./meta";
 type WorkerNode = equinix.metal.Device;
 
 export interface Config {
+  nameSuffix: string;
   plan: equinix.metal.Plan;
   replicas: number;
 }
@@ -16,10 +17,10 @@ export interface Config {
 export class WorkerPool extends ComponentResource {
   readonly cluster: Cluster;
 
-  constructor(cluster: Cluster, name: string, config: Config) {
+  constructor(cluster: Cluster, config: Config) {
     super(
       `${PREFIX}:kubernetes:WorkerPool`,
-      `${cluster.name}-${name}`,
+      `${cluster.name}-${config.nameSuffix}`,
       config,
       { parent: cluster }
     );
@@ -27,11 +28,11 @@ export class WorkerPool extends ComponentResource {
     this.cluster = cluster;
 
     for (let i = 1; i <= config.replicas; i++) {
-      this.createWorkerPoolNode(name, cluster, config, i);
+      this.createWorkerPoolNode(config.nameSuffix, cluster, config, i);
     }
   }
 
-  createWorkerPoolNode(
+  private createWorkerPoolNode(
     name: string,
     cluster: Cluster,
     config: Config,
@@ -46,7 +47,7 @@ export class WorkerPool extends ComponentResource {
         plan: config.plan,
         operatingSystem: equinix.metal.OperatingSystem.Ubuntu2204,
         projectId: cluster.config.project,
-        customData: all([cluster.joinToken(), cluster.controlPlaneIp]).apply(
+        customData: all([cluster.joinToken, cluster.controlPlaneIp]).apply(
           ([joinToken, controlPlaneIp]) =>
             JSON.stringify({
               kubernetesVersion: cluster.config.kubernetesVersion,
