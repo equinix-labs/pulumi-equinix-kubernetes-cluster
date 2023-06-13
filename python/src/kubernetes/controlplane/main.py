@@ -53,6 +53,14 @@ class ControlPlane(ComponentResource):
 
         self.join_token = JoinToken(self)
 
+        self.ccm_api_key = equinix.metal.ProjectApiKey(
+            f"{self.cluster.name}-api-key",
+            project_id=self.cluster.config.project,
+            description="API Key for Kubernetes CCM cloud-provider-equinix-metal",
+            read_only=False,
+            opts=ResourceOptions(parent=self),
+        )
+
         self.control_plane_devices = []
         control_plane1 = self.__create_device(1)
         self.control_plane_devices.append(control_plane1)
@@ -64,14 +72,14 @@ class ControlPlane(ComponentResource):
         )
 
         wait_cloudinit = command.remote.Command(
-            "wait-cloud-init",
+            f"{self.cluster.name}-wait-cloud-init",
             connection=conn,
             create="cloud-init status --wait",
             opts=ResourceOptions(parent=self, depends_on=[control_plane1.device]),
         )
 
         self.kubeconfig = command.remote.Command(
-            "kubeconfig",
+            f"{self.cluster.name}-kubeconfig",
             connection=conn,
             create="cat /root/.kube/config",
             opts=ResourceOptions(
@@ -115,6 +123,8 @@ class ControlPlane(ComponentResource):
                 self.front_proxy_certificate.certificate.cert_pem,
                 self.etcd_certificate.private_key.private_key_pem,
                 self.etcd_certificate.certificate.cert_pem,
+                self.cluster.config.project,
+                self.ccm_api_key.token,
             ).apply(
                 lambda values: Output.json_dumps(
                     {
@@ -130,6 +140,8 @@ class ControlPlane(ComponentResource):
                         "frontProxyCert": values[7],
                         "etcdKey": values[8],
                         "etcdCert": values[9],
+                        "projectId": values[10],
+                        "ccmApiKey": values[11] if i == 1 else "",
                     },
                     separators=(",", ":"),
                 )

@@ -100,12 +100,6 @@ cloud_config = cloudinit.get_config(
         cloudinit.ConfigPartArgs(
             content_type="text/x-shellscript",
             content=helpers.get_file_content(
-                f"{helpers.get_project_root()}/cloud-init/scripts/kubelet-config.sh"
-            ),
-        ),
-        cloudinit.ConfigPartArgs(
-            content_type="text/x-shellscript",
-            content=helpers.get_file_content(
                 f"{helpers.get_project_root()}/cloud-init/scripts/kubernetes-kubeadm-packages.sh"
             ),
         ),

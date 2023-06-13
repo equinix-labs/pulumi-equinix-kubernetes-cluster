@@ -5,6 +5,7 @@ echo "Kubeadm config..."
 
 JOIN_TOKEN=$(jq -r ".joinToken" /run/customdata.json)
 CONTROL_PLANE_IP=$(jq -r ".controlPlaneIp" /run/customdata.json)
+PRIVATE_IPv4=$(curl -s https://metadata.platformequinix.com/metadata | jq -r '.network.addresses | map(select(.public==false and .management==true)) | first | .address')
 
 mkdir -p /etc/kubernetes/
 
@@ -14,6 +15,7 @@ kind: JoinConfiguration
 nodeRegistration:
   kubeletExtraArgs:
     cloud-provider: "external"
+    node-ip: "${PRIVATE_IPv4}"
   taints: null
 discovery:
   bootstrapToken:

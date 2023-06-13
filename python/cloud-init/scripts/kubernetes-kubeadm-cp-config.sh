@@ -21,6 +21,7 @@ localAPIEndpoint:
 nodeRegistration:
   kubeletExtraArgs:
     cloud-provider: "external"
+    node-ip: "${PRIVATE_IPv4}"
   taints: null
 bootstrapTokens:
 - token: ${JOIN_TOKEN}
@@ -46,6 +47,7 @@ kind: JoinConfiguration
 nodeRegistration:
   kubeletExtraArgs:
     cloud-provider: "external"
+    node-ip: "${PRIVATE_IPv4}"
   taints: null
 discovery:
   bootstrapToken:
