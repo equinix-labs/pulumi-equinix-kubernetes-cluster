@@ -85,6 +85,12 @@ cloud_config = cloudinit.get_config(
                 f"{helpers.get_project_root()}/cloud-init/scripts/download-metadata.sh"
             ),
         ),
+        cloudinit.GetConfigPartArgs(
+            content_type="text/x-shellscript",
+            content=helpers.get_file_content(
+                f"{helpers.get_project_root()}/cloud-init/scripts/network-config-worker.sh"
+            ),
+        ),
         cloudinit.ConfigPartArgs(
             content_type="text/x-shellscript",
             content=helpers.get_file_content(
