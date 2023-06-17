@@ -17,7 +17,7 @@ def create_project() -> equinix.metal.Project:
     return equinix.metal.Project(
         "example",
         name="pulumi-k8s",
-        organization_id=config.require_secret("organization"),
+        organization_id=config.get("organization"),
         bgp_config=equinix.metal.ProjectBgpConfigArgs(
             deployment_type="local",
             asn=65000,
@@ -55,9 +55,9 @@ def create_project_key(
 
 # Get configuration values
 config = pulumi.Config()
-kubernetes_version = config.get("kubernetesVersion") or "1.24.7"
-metal_metro = config.get("metro") or "SV"
-project_id = config.get("project") or create_project().id
+kubernetes_version = config.get("kubernetesVersion", "1.24.7")
+metal_metro = config.get("metro", "SV")
+project_id = config.get("project", create_project().id)
 ssh_private_key_path = config.get("sshPrivateKeyPath")
 private_ssh_key = (
     create_project_key("pulumi-k8s-metal-ssh-key", project_id)
