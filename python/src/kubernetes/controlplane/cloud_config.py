@@ -98,6 +98,12 @@ cloud_config = cloudinit.get_config(
         cloudinit.GetConfigPartArgs(
             content_type="text/x-shellscript",
             content=helpers.get_file_content(
+                f"{helpers.get_project_root()}/cloud-init/scripts/kube-vip-lb-services.sh"
+            ),
+        ),
+        cloudinit.GetConfigPartArgs(
+            content_type="text/x-shellscript",
+            content=helpers.get_file_content(
                 f"{helpers.get_project_root()}/cloud-init/scripts/net-deny-metadata.sh"
             ),
         ),
