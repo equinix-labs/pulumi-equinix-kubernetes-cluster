@@ -1,4 +1,4 @@
-name: metal-k8s-cluster
+name: equinix-py-metal-k8s-cluster
 runtime: python
 description: A python Pulumi template for Kubernetes on Equinix Metal with kubeadm and cloud-init
 main: src/__main__.py
