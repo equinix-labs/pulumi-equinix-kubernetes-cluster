@@ -17,6 +17,7 @@ class Config:
         self.high_availability = high_availability
 
 
+@input_type
 class ControlPlaneNode:
     def __init__(
         self, device: equinix.metal.Device, bgp_session: equinix.metal.BgpSession
@@ -101,7 +102,7 @@ class ControlPlane(ComponentResource):
 
     def __create_device(
         self, i: int, depends_on: List[equinix.metal.Device] = []
-    ) -> ControlPlaneNode:
+    ) -> Output[ControlPlaneNode]:
         hostname = f"{self.cluster.name}-control-plane-{i}"
 
         device = equinix.metal.Device(
@@ -157,4 +158,6 @@ class ControlPlane(ComponentResource):
             opts=ResourceOptions(parent=self, depends_on=[device]),
         )
 
-        return ControlPlaneNode(device=device, bgp_session=bgp_session)
+        return Output.from_input(
+            ControlPlaneNode(device=device, bgp_session=bgp_session)
+        )

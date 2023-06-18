@@ -4,7 +4,7 @@ import sys
 import pulumi
 import pulumi_equinix as equinix
 import pulumi_tls as tls
-from pulumi import Input, Output, ResourceOptions
+from pulumi import Input, Output
 
 sys.path.insert(0, os.getcwd())
 from kubernetes.cluster import Cluster
@@ -88,3 +88,19 @@ cluster = Cluster(
 )
 
 pulumi.export("kubeconfig", cluster.control_plane.kubeconfig)
+
+cp_nodes = {
+    node.device.hostname: node.device.access_public_ipv4
+    for node in cluster.control_plane.control_plane_devices
+}
+pulumi.export("controlPlaneDeviceIps", Output.all(cp_nodes))
+
+
+worker_pools = {}
+for name, pool in cluster.worker_pools.items():
+    worker_pools[name] = {
+        node.device.hostname: node.device.access_public_ipv4
+        for node in pool.worker_nodes
+    }
+
+pulumi.export("WorkerPoolsDeviceIps", Output.all(worker_pools))

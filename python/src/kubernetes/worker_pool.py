@@ -21,19 +21,22 @@ class Config:
 
 class WorkerPool(ComponentResource):
     def __init__(self, cluster, config: Config):
+        self.name = f"{cluster.name}-{config.name_suffix}"
         super().__init__(
             f"{PREFIX}:kubernetes:WorkerPool",
-            f"{cluster.name}-{config.name_suffix}",
+            self.name,
             config.__dict__,
             ResourceOptions(parent=cluster),
         )
-
-        self.cluster = cluster
-
+        self.worker_nodes = []
         for i in range(1, config.replicas + 1):
-            self.__create_worker_pool_node(config.name_suffix, cluster, config, i)
+            self.worker_nodes.append(
+                self.__create_worker_pool_node(config.name_suffix, cluster, config, i)
+            )
 
-    def __create_worker_pool_node(self, name: str, cluster, config: Config, num: int):
+    def __create_worker_pool_node(
+        self, name: str, cluster, config: Config, num: int
+    ) -> Output[WorkerNode]:
         device = equinix.metal.Device(
             f"{cluster.name}-{name}-{num}",
             hostname=f"{cluster.name}-{name}-{num}",
@@ -66,7 +69,7 @@ class WorkerPool(ComponentResource):
             else None,
         )
 
-        return WorkerNode(device)
+        return Output.from_input(WorkerNode(device))
 
 
 cloud_config = cloudinit.get_config(
