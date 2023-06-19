@@ -4,7 +4,7 @@ set -e
 echo "Install kube-vip for HA..."
 
 CONTROL_PLANE_IP=$(jq -r ".controlPlaneIp" /run/customdata.json)
-KUBE_VIP_VERSION="v0.5.12" #TODO $(jq -r ".kubeVipVersion" /run/customdata.json)
+KUBE_VIP_VERSION="v0.5.12" #TODO (ocobleseqx) should it be customisable $(jq -r ".kubeVipVersion" /run/customdata.json)?
 
 ctr image pull ghcr.io/kube-vip/kube-vip:${KUBE_VIP_VERSION}
 ctr run --rm --net-host ghcr.io/kube-vip/kube-vip:${KUBE_VIP_VERSION} vip /kube-vip manifest pod \

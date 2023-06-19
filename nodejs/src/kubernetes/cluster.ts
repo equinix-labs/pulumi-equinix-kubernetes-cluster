@@ -22,7 +22,7 @@ export class Cluster extends ComponentResource {
   readonly controlPlaneIp: Output<string>;
   readonly controlPlane: ControlPlane;
   readonly joinToken: Output<string>;
-  private workerPools: { [name: string]: WorkerPool } = {};
+  readonly workerPools: {[name: string]: WorkerPool} = {};
 
   constructor(name: string, config: Config) {
     super(`${PREFIX}:kubernetes:Cluster`, name, config, {});
@@ -45,15 +45,20 @@ export class Cluster extends ComponentResource {
 
       if (config.workerPoolConfigs) {
         config.workerPoolConfigs.forEach((workerConfig) => {
-          this.createWorkerPool(workerConfig.nameSuffix, workerConfig);
+          this.createWorkerPool(workerConfig);
         });
       }
 
-      this.registerOutputs({ kubeconfig: this.controlPlane.kubeconfig });
+      this.registerOutputs({
+        kubeconfig: this.controlPlane.kubeconfig,
+        controlPlaneDevices: this.controlPlane.controlPlaneDevices,
+        workerPools: this.workerPools,
+      });
   }
 
-  private createWorkerPool(name: string, config: WorkerPoolConfig) {
-    this.workerPools[name] = new WorkerPool(this, config);
+  private createWorkerPool(config: WorkerPoolConfig) {
+    const wp = new WorkerPool(this, config);
+    this.workerPools[wp.name] = wp;
   }
 }
 

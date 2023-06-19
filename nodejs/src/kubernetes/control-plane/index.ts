@@ -30,6 +30,7 @@ export class ControlPlane extends ComponentResource {
   readonly joinToken: JoinToken;
   readonly controlPlaneDevices: ControlPlaneNode[] = [];
   readonly kubeconfig: Output<string>;
+  private ccmApiKey: equinix.metal.ProjectApiKey;
 
   constructor(cluster: Cluster, config: Config) {
     super(`${PREFIX}:kubernetes:ControlPlane`, cluster.name, config, {
@@ -61,6 +62,18 @@ export class ControlPlane extends ComponentResource {
 
     this.joinToken = new JoinToken(this);
 
+    this.ccmApiKey = new equinix.metal.ProjectApiKey(
+      `${cluster.name}-api-key`,
+      {
+        projectId: cluster.config.project,
+        description: "API Key for Kubernetes CCM cloud-provider-equinix-metal",
+        readOnly: false,
+      },
+      {
+        parent: this,
+      }
+    );
+
     const controlPlane1 = this.createDevice(1);
     this.controlPlaneDevices.push(controlPlane1);
 
@@ -71,7 +84,7 @@ export class ControlPlane extends ComponentResource {
     };
 
     const waitCloudInit = new remote.Command(
-      "wait-cloud-init",
+      `${cluster.name}-wait-cloud-init`,
       {
           connection: conn,
           create: "cloud-init status --wait",
@@ -83,7 +96,7 @@ export class ControlPlane extends ComponentResource {
     );
 
     this.kubeconfig = new remote.Command(
-      "kubeconfig",
+      `${cluster.name}-kubeconfig`,
       {
           connection: conn,
           create: "cat /root/.kube/config",
@@ -134,6 +147,8 @@ export class ControlPlane extends ComponentResource {
             this.frontProxyCertificate.certificate.certPem,
             this.etcdCertificate.privateKey.privateKeyPem,
             this.etcdCertificate.certificate.certPem,
+            this.cluster.config.project,
+            this.ccmApiKey.token,
           ])
           .apply(
             ([
@@ -147,6 +162,8 @@ export class ControlPlane extends ComponentResource {
               frontProxyCert,
               etcdKey,
               etcdCert,
+              projectId,
+              ccmApiKey
             ]) =>
               JSON.stringify({
                 kubernetesVersion: this.cluster.config.kubernetesVersion,
@@ -161,6 +178,8 @@ export class ControlPlane extends ComponentResource {
                 frontProxyCert,
                 etcdKey,
                 etcdCert,
+                projectId,
+                ccmApiKey: i == 1 ? ccmApiKey : "",
               })
           ),
         userData: cloudConfig.then((c) => c.rendered),

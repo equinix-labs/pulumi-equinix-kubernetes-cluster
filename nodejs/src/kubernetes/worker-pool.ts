@@ -15,7 +15,8 @@ export interface Config {
 }
 
 export class WorkerPool extends ComponentResource {
-  readonly cluster: Cluster;
+  readonly workerNodes: WorkerNode[] = [];
+  readonly name: string;
 
   constructor(cluster: Cluster, config: Config) {
     super(
@@ -25,10 +26,11 @@ export class WorkerPool extends ComponentResource {
       { parent: cluster }
     );
 
-    this.cluster = cluster;
+    this.name = `${cluster.name}-${config.nameSuffix}`
 
     for (let i = 1; i <= config.replicas; i++) {
-      this.createWorkerPoolNode(config.nameSuffix, cluster, config, i);
+      const workerNode = this.createWorkerPoolNode(config.nameSuffix, cluster, config, i);
+      this.workerNodes.push(workerNode);
     }
   }
 
@@ -90,6 +92,13 @@ const cloudConfig = cloudinit.getConfig({
     {
       contentType: "text/x-shellscript",
       content: fs.readFileSync(
+        "../cloud-init/scripts/network-config-worker.sh",
+        "utf8"
+      ),
+    },
+    {
+      contentType: "text/x-shellscript",
+      content: fs.readFileSync(
         "../cloud-init/scripts/containerd-prerequisites.sh",
         "utf8"
       ),
@@ -98,13 +107,6 @@ const cloudConfig = cloudinit.getConfig({
       contentType: "text/x-shellscript",
       content: fs.readFileSync(
         "../cloud-init/scripts/kubernetes-prerequisites.sh",
-        "utf8"
-      ),
-    },
-    {
-      contentType: "text/x-shellscript",
-      content: fs.readFileSync(
-        "../cloud-init/scripts/kubelet-config.sh",
         "utf8"
       ),
     },
