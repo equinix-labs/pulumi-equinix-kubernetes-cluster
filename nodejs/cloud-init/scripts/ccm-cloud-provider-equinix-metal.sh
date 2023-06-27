@@ -8,12 +8,12 @@ set -e
 
 echo "Install CPEM..."
 
+CPEM_VERSION=${CPEM_VERSION:-v3.6.2}
+
 CONTROL_PLANE_ROLE=$(jq -r ".controlPlaneRole" /run/customdata.json)
 if ! [[ "${CONTROL_PLANE_ROLE}" == "primary" ]]; then
   exit 0
 fi
-
-CPEM_VERSION="v3.6.2"
 API_KEY=$(jq -r ".ccmApiKey" /run/customdata.json)
 PROJECT=$(jq -r ".projectId" /run/customdata.json)
 METRO=$(jq -r ".metro" /run/metadata.json)
