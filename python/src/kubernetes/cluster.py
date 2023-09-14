@@ -1,6 +1,6 @@
 import os
 import sys
-from typing import Any, Dict
+from typing import Dict
 
 import pulumi_equinix as equinix
 
@@ -8,7 +8,6 @@ sys.path.insert(0, os.getcwd())
 
 from typing import Optional
 
-import pulumi
 from kubernetes.controlplane.main import Config as ControlPlaneConfig
 from kubernetes.controlplane.main import ControlPlane
 from kubernetes.meta import PREFIX
@@ -55,9 +54,16 @@ class Cluster(ComponentResource):
 
         self.worker_pools: Dict[str, WorkerPool] = {}
         for worker_config in config.worker_pool_configs:
-            self.__create_worker_pool(worker_config.name_suffix, worker_config)
+            self.__create_worker_pool(worker_config)
 
-        self.register_outputs({"kubeconfig": self.control_plane.kubeconfig})
+        self.register_outputs(
+            {
+                "kubeconfig": self.control_plane.kubeconfig,
+                "controlPlaneDevices": self.control_plane.control_plane_devices,
+                "workerPools": self.worker_pools,
+            }
+        )
 
-    def __create_worker_pool(self, name: str, config: WorkerPoolConfig):
-        self.worker_pools[name] = WorkerPool(self, config)
+    def __create_worker_pool(self, config: WorkerPoolConfig):
+        wp = WorkerPool(self, config)
+        self.worker_pools[wp.name] = wp

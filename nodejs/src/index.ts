@@ -9,7 +9,7 @@ import { Cluster } from "./kubernetes";
 function createProject() {
   return new equinix.metal.Project("example", {
       name: "pulumi-k8s",
-      organizationId: config.requireSecret("organization"),
+      organizationId: config.get("organization"),
       bgpConfig: {
           deploymentType: "local",
           asn: 65000,
@@ -68,4 +68,30 @@ const cluster = new Cluster("example", {
   ],
 });
 
+// export kubeconfig
 export const kubeconfig = cluster.controlPlane.kubeconfig;
+
+// export controlPlaneDeviceIps
+const cpNodes: pulumi.Output<{ hostname: string; ip: string }[]> = pulumi.all(
+  cluster.controlPlane.controlPlaneDevices.map((node) => ({
+    hostname: node.device.hostname,
+    ip: node.device.accessPublicIpv4,
+  }))
+);
+export const controlPlaneDeviceIps = cpNodes;
+
+
+// export workerPoolsDeviceIps
+const workerPools: { [key: string]: pulumi.Output<{ hostname: string; ip: string }[]> } = {};
+Object.keys(cluster.workerPools).forEach((name) => {
+  let pool = cluster.workerPools[name];
+  const wNodes: pulumi.Output<{ hostname: string; ip: string }[]> = pulumi.all(
+    pool.workerNodes.map((node) => ({
+      hostname: node.hostname,
+      ip: node.accessPublicIpv4,
+    }))
+  );
+  workerPools[name] = wNodes;
+});
+
+export const workerPoolsDeviceIps = workerPools;

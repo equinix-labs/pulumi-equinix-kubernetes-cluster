@@ -3,12 +3,14 @@ set -e
 
 echo "Install CNI Cilium..."
 
+CILIUM_VERSION=${CILIUM_VERSION:-1.13.3}
+
 CONTROL_PLANE_IP=$(jq -r ".controlPlaneIp" /run/customdata.json)
 
 helm repo add cilium https://helm.cilium.io/
 
 helm template cilium/cilium  \
-		--version 1.13.3 \
+		--version ${CILIUM_VERSION} \
 		--namespace kube-system \
 		--set image.repository=quay.io/cilium/cilium \
 		--set MTU=1500 \

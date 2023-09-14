@@ -51,11 +51,11 @@ The following table lists the configuration variables for both templates:
 
 | Variable | Description | Default Value |
 |----------|-------------|---------------|
-| organization | The Equinix Metal organization ID. This variable is required. | N/A           |
+| organization | The Equinix Metal organization ID under which you want to create the project. This variable is optional. If you omit the `organization` input, the project will be created within the default organization associated with your account.| N/A           |
 | project | The Equinix Metal project ID. This variable is optional. If not specified, a new project will be created. | N/A           |
-| metro   | The deployment metro code. This variable is optional and defaults to 'SV'. See [metro codes](https://deploy.equinix.com/developers/docs/metal/locations/metros/#metros-quick-reference) | SV            |
+| metro   | The deployment metro code. This variable is optional. See [metro codes](https://deploy.equinix.com/developers/docs/metal/locations/metros/#metros-quick-reference) | SV            |
 | sshPrivateKeyPath | Path to a private key of an existing Equinix Metal SSH Key. This variable is optional. If not specified, a new project Equinix Metal SSH Key will be created. | N/A           |
-| kubernetesVersion  | The Kubernetes version. This variable is optional and defaults to '1.24.7'. | 1.24.7         |
+| kubernetesVersion  | The Kubernetes version. This variable is optional. | 1.24.7         |
 
 To add them you can use `pulumi config set` command:
 

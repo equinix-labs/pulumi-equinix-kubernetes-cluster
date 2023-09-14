@@ -4,7 +4,7 @@ import sys
 import pulumi
 import pulumi_equinix as equinix
 import pulumi_tls as tls
-from pulumi import Input, Output, ResourceOptions
+from pulumi import Input, Output
 
 sys.path.insert(0, os.getcwd())
 from kubernetes.cluster import Cluster
@@ -17,7 +17,7 @@ def create_project() -> equinix.metal.Project:
     return equinix.metal.Project(
         "example",
         name="pulumi-k8s",
-        organization_id=config.require_secret("organization"),
+        organization_id=config.get("organization"),
         bgp_config=equinix.metal.ProjectBgpConfigArgs(
             deployment_type="local",
             asn=65000,
@@ -55,9 +55,9 @@ def create_project_key(
 
 # Get configuration values
 config = pulumi.Config()
-kubernetes_version = config.get("kubernetesVersion") or "1.24.7"
-metal_metro = config.get("metro") or "SV"
-project_id = config.get("project") or create_project().id
+kubernetes_version = config.get("kubernetesVersion", "1.24.7")
+metal_metro = config.get("metro", "SV")
+project_id = config.get("project", create_project().id)
 ssh_private_key_path = config.get("sshPrivateKeyPath")
 private_ssh_key = (
     create_project_key("pulumi-k8s-metal-ssh-key", project_id)
@@ -88,3 +88,19 @@ cluster = Cluster(
 )
 
 pulumi.export("kubeconfig", cluster.control_plane.kubeconfig)
+
+cp_nodes = {
+    node.device.hostname: node.device.access_public_ipv4
+    for node in cluster.control_plane.control_plane_devices
+}
+pulumi.export("controlPlaneDeviceIps", Output.all(cp_nodes))
+
+
+worker_pools = {}
+for name, pool in cluster.worker_pools.items():
+    worker_pools[name] = {
+        node.device.hostname: node.device.access_public_ipv4
+        for node in pool.worker_nodes
+    }
+
+pulumi.export("WorkerPoolsDeviceIps", Output.all(worker_pools))

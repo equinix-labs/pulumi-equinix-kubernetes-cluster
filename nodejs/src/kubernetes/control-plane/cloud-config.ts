@@ -57,13 +57,6 @@ export const cloudConfig = cloudinit.getConfig({
     {
       contentType: "text/x-shellscript",
       content: fs.readFileSync(
-        "../cloud-init/scripts/kubelet-config.sh",
-        "utf8"
-      ),
-    },
-    {
-      contentType: "text/x-shellscript",
-      content: fs.readFileSync(
         "../cloud-init/scripts/kubernetes-kubeadm-certs.sh",
         "utf8"
       ),
@@ -107,6 +100,20 @@ export const cloudConfig = cloudinit.getConfig({
       contentType: "text/x-shellscript",
       content: fs.readFileSync(
         "../cloud-init/scripts/cni-cilium.sh",
+        "utf8"
+      ),
+    },
+    {
+      contentType: "text/x-shellscript",
+      content: fs.readFileSync(
+        "../cloud-init/scripts/ccm-cloud-provider-equinix-metal.sh",
+        "utf8"
+      ),
+    },
+    {
+      contentType: "text/x-shellscript",
+      content: fs.readFileSync(
+        "../cloud-init/scripts/kube-vip-lb-services.sh",
         "utf8"
       ),
     },

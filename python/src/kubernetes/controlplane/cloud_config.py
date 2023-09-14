@@ -50,12 +50,6 @@ cloud_config = cloudinit.get_config(
         cloudinit.GetConfigPartArgs(
             content_type="text/x-shellscript",
             content=helpers.get_file_content(
-                f"{helpers.get_project_root()}/cloud-init/scripts/kubelet-config.sh"
-            ),
-        ),
-        cloudinit.GetConfigPartArgs(
-            content_type="text/x-shellscript",
-            content=helpers.get_file_content(
                 f"{helpers.get_project_root()}/cloud-init/scripts/kubernetes-kubeadm-certs.sh"
             ),
         ),
@@ -93,6 +87,18 @@ cloud_config = cloudinit.get_config(
             content_type="text/x-shellscript",
             content=helpers.get_file_content(
                 f"{helpers.get_project_root()}/cloud-init/scripts/cni-cilium.sh"
+            ),
+        ),
+        cloudinit.GetConfigPartArgs(
+            content_type="text/x-shellscript",
+            content=helpers.get_file_content(
+                f"{helpers.get_project_root()}/cloud-init/scripts/ccm-cloud-provider-equinix-metal.sh"
+            ),
+        ),
+        cloudinit.GetConfigPartArgs(
+            content_type="text/x-shellscript",
+            content=helpers.get_file_content(
+                f"{helpers.get_project_root()}/cloud-init/scripts/kube-vip-lb-services.sh"
             ),
         ),
         cloudinit.GetConfigPartArgs(

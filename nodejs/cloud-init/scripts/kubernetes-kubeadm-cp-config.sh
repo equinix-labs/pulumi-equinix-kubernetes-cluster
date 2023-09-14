@@ -6,7 +6,7 @@ echo "Kubeadm config..."
 KUBERNETES_VERSION=$(jq -r ".kubernetesVersion" /run/customdata.json)
 JOIN_TOKEN=$(jq -r ".joinToken" /run/customdata.json)
 CONTROL_PLANE_IP=$(jq -r ".controlPlaneIp" /run/customdata.json)
-PRIVATE_IPv4=$(curl -s https://metadata.platformequinix.com/metadata | jq -r '.network.addresses | map(select(.public==false and .management==true)) | first | .address')
+PRIVATE_IPv4=$(jq -r '.network.addresses | map(select(.public==false and .management==true)) | first | .address' /run/metadata.json)
 
 cat > /etc/kubernetes/init.yaml <<EOF
 apiVersion: kubelet.config.k8s.io/v1beta1
@@ -21,6 +21,7 @@ localAPIEndpoint:
 nodeRegistration:
   kubeletExtraArgs:
     cloud-provider: "external"
+    node-ip: "${PRIVATE_IPv4}"
   taints: null
 bootstrapTokens:
 - token: ${JOIN_TOKEN}
@@ -46,6 +47,7 @@ kind: JoinConfiguration
 nodeRegistration:
   kubeletExtraArgs:
     cloud-provider: "external"
+    node-ip: "${PRIVATE_IPv4}"
   taints: null
 discovery:
   bootstrapToken:
